@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle de Estoque EPI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <h1>Controle de Estoque EPI</h1>
+</header>
+<nav class="menu">
+    <div class="nav-links">
+        <a href="/SCE_php_teste/" class="menu-btn active"><span class="material-icons">home</span>Início</a>
+        <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+        <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
+        <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
+    </div>
+    <div class="nav-actions">
+        <a class="menu-btn" href="graficos.php">
+            <span class="material-icons">bar_chart</span>
+            Ver Gráficos
+        </a>
+    </div>
+</nav>
+<div class="dashboard-section" id="dashboard-cards">
+    <div class="dashboard-card" style="--i:0">
+        <span class="material-icons">inventory</span>
+        <div class="dashboard-card-title">EPIs em Estoque</div>
+        <div class="dashboard-card-value" id="card-total-estoque">0</div>
+        <div class="dashboard-card-desc">Quantidade total no estoque</div>
+    </div>
+    <div class="dashboard-card pulsante" id="card-estoque-baixo-card" style="--i:1">
+        <span class="material-icons">report_problem</span>
+        <div class="dashboard-card-title">Estoque Baixo</div>
+        <div class="dashboard-card-value" id="card-estoque-baixo">0</div>
+        <div class="dashboard-card-desc">EPIs com estoque crítico</div>
+    </div>
+    <div class="dashboard-card" style="--i:2">
+        <span class="material-icons">trending_up</span>
+        <div class="dashboard-card-title">Mais Movimentados</div>
+        <div class="dashboard-card-value" id="card-mais-movimentados" style="font-size:1.05rem; line-height:1.2; font-weight:600; text-align:left; margin-bottom:5px;"></div>
+        <div class="dashboard-card-desc">EPIs com maior movimentação</div>
+    </div>
+    <div class="dashboard-card" style="--i:3">
+        <span class="material-icons">warning_amber</span>
+        <div class="dashboard-card-title">Próximos do Vencimento</div>
+        <div class="dashboard-card-value" id="card-vencendo">0</div>
+        <div class="dashboard-card-desc">EPIs vencem em 30 dias</div>
+    </div>
+</div>
+<div id="modal-estoque-baixo">
+  <div>
+    <span style="position:absolute; top:10px; right:18px; cursor:pointer; font-size:1.5em; color:#888;" onclick="fecharModalEstoqueBaixo()">&times;</span>
+    <h3>EPIs com Estoque Crítico</h3>
+    <div id="modal-estoque-baixo-lista" style="font-size:1.06em;"></div>
+  </div>
+</div>
+<div class="container">
+    <h2><span class="material-icons" style="vertical-align:-5px;color:var(--primary-light);">add_box</span> Cadastrar Estoque EPI</h2>
+    <label>Nome do EPI:
+        <input type="text" id="nome-equipamento">
+    </label>
+    <label>Nº do EPI:
+        <input type="text" id="numero-item">
+    </label>
+    <label>Quantidade a ser adicionada:
+        <input type="number" id="quantidade-inicial" min="0" value="0">
+    </label>
+    <button onclick="adicionarEquipamento()"><span class="material-icons">add_circle</span>Adicionar</button>
+</div>
+<div class="container">
+    <h2><span class="material-icons" style="vertical-align:-5px;color:var(--primary-light);">compare_arrows</span> Movimentar Estoque</h2>
+    <label>EPI:
+        <div style="display:flex;align-items:center;gap:8px;">
+            <select id="select-equipamento" style="flex:1;"></select>
+            <button type="button" id="btn-ler-qr" style="background:none;border:none;cursor:pointer;padding:0 5px;">
+                <span class="material-icons" style="font-size:1.4em;color:#1976d2;">qr_code_scanner</span>
+            </button>
+        </div>
+    </label>
+    <label>Tipo:
+        <select id="tipo-movimento">
+            <option value="entrada">Entrada</option>
+            <option value="saida">Saída</option>
+        </select>
+    </label>
+    <label>Quantidade:
+        <input type="number" id="quantidade-movimento" min="1" value="1">
+    </label>
+    <label>Validade do EPI:
+        <input type="date" id="validade-equipamento">
+    </label>
+    <label>Responsável:
+        <input type="text" id="usuario" placeholder="Seu nome">
+    </label>
+    <label>Recebido por:
+        <input type="text" id="recebido-por" placeholder="Quem recebeu (opcional)">
+    </label>
+    <label>Observação:
+        <textarea id="observacao-movimentacao" placeholder="Mensagem sobre a entrada ou saída (opcional)"></textarea>
+    </label>
+    <button onclick="movimentarEstoque()"><span class="material-icons">send</span>Registrar Movimento</button>
+</div>
+<div id="qr-modal-bg">
+    <div id="qr-modal-box">
+        <span id="qr-modal-close" onclick="fecharQRModal()">&times;</span>
+        <h3>Ler QR Code do EPI</h3>
+        <div id="qr-reader" style="width:320px;max-width:90vw;"></div>
+        <div id="qr-status" style="margin-top:9px;font-size:1.01em;color:#1976d2;"></div>
+    </div>
+</div>
+<div class="menu-shortcut-wrapper">
+    <div class="menu-shortcut">
+        <button onclick="window.location.href='estoque.php'">
+            <span class="material-icons">inventory_2</span>
+            Ver Estoque Atual
+        </button>
+        <button onclick="window.location.href='historico.php'">
+            <span class="material-icons">history</span>
+            Ver Histórico
+        </button>
+    </div>
+</div>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script src="script.js"></script>
+</body>
+</html>
