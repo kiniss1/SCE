@@ -18,7 +18,7 @@
 
 <nav class="menu">
     <div class="nav-links">
-        <a href="/SCE_php_teste/" class="menu-btn"><span class="material-icons">home</span>Início</a>
+        <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
         <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
         <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
         <a href="graficos.php" class="menu-btn active"><span class="material-icons">bar_chart</span>Gráficos</a>
