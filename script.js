@@ -1,5 +1,5 @@
 let equipamentos = [];
-let html5QrCode = null; // Para controle do leitor QR
+let html5QrCode = null;
 
 function carregarEquipamentosBackend() {
     return fetch('listar_itens.php')
@@ -9,6 +9,7 @@ function carregarEquipamentosBackend() {
             return lista;
         });
 }
+
 function adicionarEquipamento() {
     const nome = document.getElementById('nome-equipamento').value.trim();
     const numero = document.getElementById('numero-item').value.trim();
@@ -23,19 +24,21 @@ function adicionarEquipamento() {
         method: "POST",
         body: new URLSearchParams({nome, numero, quantidade})
     })
-    .then(r => r.text())
-    .then(resp => {
-        if(resp.trim() === "ok") {
+    .then(r => r.json())
+    .then(data => {
+        if(data.status === 'ok') {
             document.getElementById('nome-equipamento').value = '';
             document.getElementById('numero-item').value = '';
             document.getElementById('quantidade-inicial').value = 0;
             atualizarTudo();
             atualizarDashboard();
         } else {
-            alert("Erro ao adicionar: " + resp);
+            alert("Erro ao adicionar: " + (data.mensagem || JSON.stringify(data)));
         }
-    });
+    })
+    .catch(err => alert("Erro ao adicionar: " + err));
 }
+
 function atualizarSelectEquipamento() {
     const select = document.getElementById('select-equipamento');
     select.innerHTML = '';
@@ -43,6 +46,7 @@ function atualizarSelectEquipamento() {
         select.innerHTML += `<option value="${eq.id}" data-numero="${eq.numero_item}" data-nome="${eq.nome}">${eq.nome} (Nº ${eq.numero_item})</option>`;
     });
 }
+
 function movimentarEstoque() {
     if(equipamentos.length === 0) { alert('Cadastre um EPI antes.'); return; }
     const item_id = document.getElementById('select-equipamento').value;
@@ -68,9 +72,9 @@ function movimentarEstoque() {
             recebido_por, observacao
         })
     })
-    .then(r => r.text())
-    .then(resp => {
-        if(resp.trim() === "ok") {
+    .then(r => r.json())
+    .then(data => {
+        if(data.status === 'ok') {
             document.getElementById('quantidade-movimento').value = 1;
             document.getElementById('usuario').value = '';
             document.getElementById('validade-equipamento').value = '';
@@ -79,10 +83,12 @@ function movimentarEstoque() {
             atualizarTudo();
             atualizarDashboard();
         } else {
-            alert("Erro: " + resp);
+            alert("Erro: " + (data.mensagem || JSON.stringify(data)));
         }
-    });
+    })
+    .catch(err => alert("Erro ao movimentar: " + err));
 }
+
 function atualizarTudo() {
     carregarEquipamentosBackend().then(() => {
         atualizarSelectEquipamento();
@@ -154,9 +160,11 @@ function mostrarModalEstoqueBaixo() {
     document.getElementById('modal-estoque-baixo-lista').innerHTML = html;
     document.getElementById('modal-estoque-baixo').style.display = 'flex';
 }
+
 function fecharModalEstoqueBaixo() {
     document.getElementById('modal-estoque-baixo').style.display = 'none';
 }
+
 document.addEventListener("DOMContentLoaded", ()=>{
     atualizarTudo();
     document.getElementById('card-estoque-baixo-card').onclick = mostrarModalEstoqueBaixo;
@@ -185,12 +193,14 @@ function abrirQRModal() {
         document.getElementById('qr-status').textContent = "Erro ao acessar câmera: " + err;
     });
 }
+
 function fecharQRModal() {
     document.getElementById('qr-modal-bg').style.display = 'none';
     if (html5QrCode) html5QrCode.stop().then(()=> {
         html5QrCode.clear();
     });
 }
+
 function selecionarEPIporQR(qrCodeMessage) {
     let qr = qrCodeMessage.trim().toLowerCase();
     let select = document.getElementById('select-equipamento');
