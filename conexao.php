@@ -19,4 +19,14 @@ try {
     http_response_code(500);
     die("Erro de conexão: " . $e->getMessage());
 }
+
+// Automatically create tables on first run (safe to call on every request —
+// MySQL's IF NOT EXISTS makes it a no-op once the tables already exist).
+require_once __DIR__ . '/init_db.php';
+try {
+    initializeDatabase($pdo);
+} catch (PDOException $e) {
+    http_response_code(500);
+    die("Erro ao inicializar banco de dados: " . $e->getMessage());
+}
 ?>
