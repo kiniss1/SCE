@@ -182,7 +182,7 @@ async function renderUsuarios(){
   const userMap = {}, userItens = {};
   movs.forEach(m => {
     if (m.tipo !== 'saida') return;
-    const user = m.responsavel || 'Não informado';
+    const user = m.recebido_por || 'Não informado';
     userMap[user] = (userMap[user]||0) + Number(m.quantidade || 0);
     userItens[user] = userItens[user] || {};
     const key = (m.nome || ('#'+m.item_id)) + (m.numero_item ? ` (Nº ${m.numero_item})` : '');
