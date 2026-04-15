@@ -1,5 +1,61 @@
 let equipamentos = [];
-let html5QrCode = null;
+let html5QrCode = null; // Para controle do leitor QR
+
+// Debounce para não disparar fetch a cada tecla
+let debounceResponsavel = null;
+let debounceRecebido = null;
+
+function buscarResponsavel() {
+    clearTimeout(debounceResponsavel);
+    debounceResponsavel = setTimeout(() => {
+        const matricula = document.getElementById('matricula-responsavel').value.trim();
+        const nomeField = document.getElementById('usuario');
+        const status = document.getElementById('status-matricula');
+        if (matricula.length < 5) {
+            nomeField.value = '';
+            status.textContent = '';
+            return;
+        }
+        fetch('buscar_colaborador.php?matricula=' + encodeURIComponent(matricula))
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    nomeField.value = data.colaborador.nome;
+                    status.textContent = '✅';
+                } else {
+                    nomeField.value = '';
+                    status.textContent = '❌';
+                }
+            })
+            .catch(() => { status.textContent = ''; });
+    }, 400);
+}
+
+function buscarRecebidoPor() {
+    clearTimeout(debounceRecebido);
+    debounceRecebido = setTimeout(() => {
+        const matricula = document.getElementById('matricula-recebido').value.trim();
+        const nomeField = document.getElementById('recebido-por');
+        const status = document.getElementById('status-matricula-recebido');
+        if (matricula.length < 5) {
+            nomeField.value = '';
+            status.textContent = '';
+            return;
+        }
+        fetch('buscar_colaborador.php?matricula=' + encodeURIComponent(matricula))
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'ok') {
+                    nomeField.value = data.colaborador.nome;
+                    status.textContent = '✅';
+                } else {
+                    nomeField.value = '';
+                    status.textContent = '❌';
+                }
+            })
+            .catch(() => { status.textContent = ''; });
+    }, 400);
+}
 
 function carregarEquipamentosBackend() {
     return fetch('listar_itens.php')
@@ -9,7 +65,6 @@ function carregarEquipamentosBackend() {
             return lista;
         });
 }
-
 function adicionarEquipamento() {
     const nome = document.getElementById('nome-equipamento').value.trim();
     const numero = document.getElementById('numero-item').value.trim();
@@ -24,21 +79,19 @@ function adicionarEquipamento() {
         method: "POST",
         body: new URLSearchParams({nome, numero, quantidade})
     })
-    .then(r => r.json())
-    .then(data => {
-        if(data.status === 'ok') {
+    .then(r => r.text())
+    .then(resp => {
+        if(resp.trim() === "ok") {
             document.getElementById('nome-equipamento').value = '';
             document.getElementById('numero-item').value = '';
             document.getElementById('quantidade-inicial').value = 0;
             atualizarTudo();
             atualizarDashboard();
         } else {
-            alert("Erro ao adicionar: " + (data.mensagem || JSON.stringify(data)));
+            alert("Erro ao adicionar: " + resp);
         }
-    })
-    .catch(err => alert("Erro ao adicionar: " + err));
+    });
 }
-
 function atualizarSelectEquipamento() {
     const select = document.getElementById('select-equipamento');
     select.innerHTML = '';
@@ -46,7 +99,6 @@ function atualizarSelectEquipamento() {
         select.innerHTML += `<option value="${eq.id}" data-numero="${eq.numero_item}" data-nome="${eq.nome}">${eq.nome} (Nº ${eq.numero_item})</option>`;
     });
 }
-
 function movimentarEstoque() {
     if(equipamentos.length === 0) { alert('Cadastre um EPI antes.'); return; }
     const item_id = document.getElementById('select-equipamento').value;
@@ -56,7 +108,7 @@ function movimentarEstoque() {
     const validade = document.getElementById('validade-equipamento').value;
     const recebido_por = document.getElementById('recebido-por').value.trim();
     const observacao = document.getElementById('observacao-movimentacao').value.trim();
-    if(!usuario) { alert('Informe o responsável.'); return; }
+    if(!usuario) { alert('Informe a matrícula do responsável.'); return; }
     if(isNaN(quantidade) || quantidade <= 0) { alert('Quantidade inválida.'); return; }
     const eq = equipamentos.find(e => e.id == item_id);
     if(!eq) { alert('EPI não encontrado!'); return; }
@@ -64,21 +116,28 @@ function movimentarEstoque() {
         alert('Estoque insuficiente!');
         return;
     }
+    const matricula_responsavel = document.getElementById('matricula-responsavel').value.trim();
+    const matricula_recebido    = document.getElementById('matricula-recebido').value.trim();
     fetch('movimentar.php', {
         method: "POST",
         body: new URLSearchParams({
             item_id, tipo, quantidade,
             validade, responsavel: usuario,
-            recebido_por, observacao
+            recebido_por, observacao,
+            matricula_responsavel, matricula_recebido
         })
     })
     .then(r => r.json())
     .then(data => {
         if(data.status === 'ok') {
             document.getElementById('quantidade-movimento').value = 1;
+            document.getElementById('matricula-responsavel').value = '';
             document.getElementById('usuario').value = '';
-            document.getElementById('validade-equipamento').value = '';
+            document.getElementById('status-matricula').textContent = '';
+            document.getElementById('matricula-recebido').value = '';
             document.getElementById('recebido-por').value = '';
+            document.getElementById('status-matricula-recebido').textContent = '';
+            document.getElementById('validade-equipamento').value = '';
             document.getElementById('observacao-movimentacao').value = '';
             atualizarTudo();
             atualizarDashboard();
@@ -88,7 +147,6 @@ function movimentarEstoque() {
     })
     .catch(err => alert("Erro ao movimentar: " + err));
 }
-
 function atualizarTudo() {
     carregarEquipamentosBackend().then(() => {
         atualizarSelectEquipamento();
@@ -160,11 +218,9 @@ function mostrarModalEstoqueBaixo() {
     document.getElementById('modal-estoque-baixo-lista').innerHTML = html;
     document.getElementById('modal-estoque-baixo').style.display = 'flex';
 }
-
 function fecharModalEstoqueBaixo() {
     document.getElementById('modal-estoque-baixo').style.display = 'none';
 }
-
 document.addEventListener("DOMContentLoaded", ()=>{
     atualizarTudo();
     document.getElementById('card-estoque-baixo-card').onclick = mostrarModalEstoqueBaixo;
@@ -193,14 +249,12 @@ function abrirQRModal() {
         document.getElementById('qr-status').textContent = "Erro ao acessar câmera: " + err;
     });
 }
-
 function fecharQRModal() {
     document.getElementById('qr-modal-bg').style.display = 'none';
     if (html5QrCode) html5QrCode.stop().then(()=> {
         html5QrCode.clear();
     });
 }
-
 function selecionarEPIporQR(qrCodeMessage) {
     let qr = qrCodeMessage.trim().toLowerCase();
     let select = document.getElementById('select-equipamento');
