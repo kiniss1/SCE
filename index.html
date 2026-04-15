@@ -14,7 +14,7 @@
 </header>
 <nav class="menu">
     <div class="nav-links">
-        <a href="/" class="menu-btn active"><span class="material-icons">home</span>Início</a>
+        <a href="/SCE_php_teste/" class="menu-btn active"><span class="material-icons">home</span>Início</a>
         <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
         <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
         <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
@@ -94,12 +94,31 @@
     <label>Validade do EPI:
         <input type="date" id="validade-equipamento">
     </label>
+
+    <!-- RESPONSÁVEL COM MATRÍCULA -->
+    <label>Matrícula do Responsável:
+        <div style="display:flex;align-items:center;gap:8px;">
+            <input type="text" id="matricula-responsavel" placeholder="Digite a matrícula" maxlength="10" style="flex:1;" oninput="buscarResponsavel()">
+            <span id="status-matricula" style="font-size:1.3em;"></span>
+        </div>
+    </label>
     <label>Responsável:
-        <input type="text" id="usuario" placeholder="Seu nome">
+        <input type="text" id="usuario" placeholder="Preenchido automaticamente pela matrícula" readonly
+               style="background:#f5f5f5; color:#555;">
+    </label>
+
+    <!-- RECEBIDO POR COM MATRÍCULA -->
+    <label>Matrícula de Quem Recebeu:
+        <div style="display:flex;align-items:center;gap:8px;">
+            <input type="text" id="matricula-recebido" placeholder="Digite a matrícula (opcional)" maxlength="10" style="flex:1;" oninput="buscarRecebidoPor()">
+            <span id="status-matricula-recebido" style="font-size:1.3em;"></span>
+        </div>
     </label>
     <label>Recebido por:
-        <input type="text" id="recebido-por" placeholder="Quem recebeu (opcional)">
+        <input type="text" id="recebido-por" placeholder="Preenchido automaticamente pela matrícula" readonly
+               style="background:#f5f5f5; color:#555;">
     </label>
+
     <label>Observação:
         <textarea id="observacao-movimentacao" placeholder="Mensagem sobre a entrada ou saída (opcional)"></textarea>
     </label>
