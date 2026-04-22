@@ -180,19 +180,99 @@ async function renderUsuarios(){
   const res = await fetch('listar_movimentacoes.php', {credentials:'same-origin'});
   const movs = await res.json();
   const userMap = {}, userItens = {};
+
+  // Filtro de período
+  const filterStart = document.getElementById('filter-start').value;
+  const filterEnd   = document.getElementById('filter-end').value;
+
   movs.forEach(m => {
     if (m.tipo !== 'saida') return;
-    const user = m.recebido_por || 'Não informado';
+
+    // Aplicar filtro de data
+    if (filterStart && m.data && m.data < filterStart) return;
+    if (filterEnd   && m.data && m.data.slice(0,10) > filterEnd) return;
+
+    const user = (m.recebido_por && m.recebido_por.trim()) ? m.recebido_por.trim() : 'Não informado';
     userMap[user] = (userMap[user]||0) + Number(m.quantidade || 0);
-    userItens[user] = userItens[user] || {};
-    const key = (m.nome || ('#'+m.item_id)) + (m.numero_item ? ` (Nº ${m.numero_item})` : '');
-    userItens[user][key] = (userItens[user][key]||0) + Number(m.quantidade || 0);
+    userItens[user] = userItens[user] || [];
+    userItens[user].push({
+      nome:       m.nome || ('#'+m.item_id),
+      numero:     m.numero_item || '',
+      quantidade: Number(m.quantidade || 0),
+      data:       m.data || '',
+      responsavel: m.responsavel || ''
+    });
   });
+
   const arr = Object.entries(userMap).sort((a,b)=>b[1]-a[1]).slice(0, Number(document.getElementById('filter-topn').value || 5));
   const labels = arr.map(a=>a[0]), data = arr.map(a=>a[1]);
   state.usuariosItensMap = userItens;
-  const cfg = { type:'bar', data:{ labels, datasets:[{ label:'Itens', data, backgroundColor:'#00bcd4' }] }, options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true} } } };
+
+  const cfg = {
+    type: 'bar',
+    data: { labels, datasets:[{ label:'Itens recebidos', data, backgroundColor:'#00bcd4' }] },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{ callbacks:{ label: ctx => `${ctx.raw} itens recebidos` } }
+      },
+      scales:{ x:{beginAtZero:true} },
+      onClick: (evt, elements) => {
+        if (!elements.length) return;
+        const idx = elements[0].index;
+        const nomeUsuario = labels[idx];
+        openUserDrillModal(nomeUsuario);
+      }
+    }
+  };
   createOrUpdateChart('chartUsuariosMaisSolicitaram', cfg);
+}
+
+// Modal de drill do colaborador — mostra todos os itens que ele recebeu
+function openUserDrillModal(nomeUsuario){
+  const modal = document.getElementById('modal-details');
+  modal.style.display = 'flex';
+  document.getElementById('modal-title').textContent = `Itens recebidos por: ${nomeUsuario}`;
+  document.getElementById('modal-export-pdf').onclick = () => exportDrillPdf(`Itens - ${nomeUsuario}`);
+
+  const itens = state.usuariosItensMap[nomeUsuario] || [];
+  if (!itens.length) {
+    document.getElementById('modal-content').innerHTML = '<p>Nenhum item encontrado para este colaborador.</p>';
+    return;
+  }
+
+  // Agrupa por EPI e soma quantidades
+  const agrupado = {};
+  itens.forEach(i => {
+    const key = i.nome + (i.numero ? ` (Nº ${i.numero})` : '');
+    if (!agrupado[key]) agrupado[key] = { total: 0, datas: [] };
+    agrupado[key].total += i.quantidade;
+    if (i.data) agrupado[key].datas.push(i.data.slice(0,10));
+  });
+
+  const table = document.createElement('table');
+  table.className = 'mini-table';
+  table.innerHTML = `<thead><tr>
+    <th>EPI</th>
+    <th style="text-align:center">Qtd Total</th>
+    <th>Última Retirada</th>
+  </tr></thead>`;
+  const tbody = document.createElement('tbody');
+
+  Object.entries(agrupado)
+    .sort((a,b) => b[1].total - a[1].total)
+    .forEach(([key, val]) => {
+      const tr = document.createElement('tr');
+      const ultimaData = val.datas.sort().reverse()[0] || '-';
+      tr.innerHTML = `<td>${escapeHtml(key)}</td><td style="text-align:center;font-weight:700">${val.total}</td><td>${escapeHtml(ultimaData)}</td>`;
+      tbody.appendChild(tr);
+    });
+
+  table.appendChild(tbody);
+  document.getElementById('modal-content').innerHTML = '';
+  document.getElementById('modal-content').appendChild(table);
+  document.getElementById('modal-pagination').innerHTML = '';
 }
 
 // Atualiza KPIs
@@ -397,9 +477,9 @@ async function init(){
 
   // carrega dados iniciais
   await loadData();
-  // ajustar datas default (últimos 6 meses)
+  // ajustar datas default (último mês)
   const end = new Date();
-  const start = new Date(end.getFullYear(), end.getMonth() - 5, 1);
+  const start = new Date(end.getFullYear(), end.getMonth() - 1, end.getDate());
   document.getElementById('filter-start').value = start.toISOString().slice(0,10);
   document.getElementById('filter-end').value = end.toISOString().slice(0,10);
 
