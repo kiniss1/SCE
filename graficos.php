@@ -141,26 +141,6 @@
         </article>
 
         <!-- Card 4 -->
-        <article class="chart-card" id="card-vencimento">
-            <div class="card-header">
-                <h3>EPIs Próximos do Vencimento (30 dias)</h3>
-                <div class="card-actions">
-                    <select class="chart-type" data-target="chartVencimento" aria-label="Tipo do gráfico">
-                        <option value="bar">Bar</option>
-                        <option value="pie">Pizza</option>
-                    </select>
-                    <button class="btn btn-sm" data-export="chartVencimento" aria-label="Exportar gráfico">Exportar PNG</button>
-                </div>
-            </div>
-            <div class="card-body">
-                <canvas id="chartVencimento" aria-label="EPIs próximos do vencimento"></canvas>
-            </div>
-            <div class="card-footer">
-                <button class="btn btn-outline" data-detail="vencimento">Ver detalhes</button>
-            </div>
-        </article>
-
-        <!-- Card 5 -->
         <article class="chart-card" id="card-usuarios">
             <div class="card-header">
                 <h3>Usuários que mais solicitaram itens</h3>
@@ -177,6 +157,26 @@
             </div>
             <div class="card-footer">
                 <button class="btn btn-outline" data-detail="usuarios">Ver detalhes</button>
+            </div>
+        </article>
+
+        <!-- Card 5 -->
+        <article class="chart-card" id="card-vencimento">
+            <div class="card-header">
+                <h3>EPIs Próximos do Vencimento (30 dias)</h3>
+                <div class="card-actions">
+                    <select class="chart-type" data-target="chartVencimento" aria-label="Tipo do gráfico">
+                        <option value="bar">Bar</option>
+                        <option value="pie">Pizza</option>
+                    </select>
+                    <button class="btn btn-sm" data-export="chartVencimento" aria-label="Exportar gráfico">Exportar PNG</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="chartVencimento" aria-label="EPIs próximos do vencimento"></canvas>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline" data-detail="vencimento">Ver detalhes</button>
             </div>
         </article>
     </section>
