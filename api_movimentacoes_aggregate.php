@@ -71,6 +71,29 @@ try {
         exit;
     }
 
+    if ($action === 'days') {
+        if (!$start || !$end) {
+            $end_dt = new DateTime();
+            $start_dt = (clone $end_dt)->modify('-30 days');
+            $start = $start_dt->format('Y-m-d');
+            $end = $end_dt->format('Y-m-d');
+        }
+        $sql = "
+            SELECT DATE_FORMAT(m.data, '%Y-%m-%d') AS period,
+                   SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END) AS entradas,
+                   SUM(CASE WHEN m.tipo = 'saida'   THEN m.quantidade ELSE 0 END) AS saidas
+            FROM movimentacoes m
+            WHERE m.data BETWEEN :start AND :end
+            GROUP BY period
+            ORDER BY period ASC
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['start' => $start . ' 00:00:00', 'end' => $end . ' 23:59:59']);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode(['status' => 'ok', 'action' => 'days', 'start' => $start, 'end' => $end, 'data' => $rows]);
+        exit;
+    }
+
     // ação desconhecida
     http_response_code(400);
     echo json_encode(['status' => 'error', 'error' => 'action inválida']);
