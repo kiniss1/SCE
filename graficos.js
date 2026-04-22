@@ -39,11 +39,11 @@ async function loadTopItems(){
 }
 
 // Usa endpoint agregado para months (entradas/saídas)
-async function loadMovsByDay(){
+async function loadMovsByMonth(){
   const start = document.getElementById('filter-start').value || '';
   const end = document.getElementById('filter-end').value || '';
   const url = new URL('api_movimentacoes_aggregate.php', location.href);
-  url.searchParams.set('action','days');
+  url.searchParams.set('action','months');
   if (start) url.searchParams.set('start', start);
   if (end) url.searchParams.set('end', end);
   const res = await fetch(url.toString(), {credentials:'same-origin'});
@@ -130,7 +130,7 @@ async function renderMaisMovimentados(){
 
 // Render Entradas/Saídas (agregado por months - usa API meses)
 async function renderEntradasSaidas(){
-  const months = await loadMovsByDay(); // array of {period:'YYYY-MM', entradas, saidas}
+  const months = await loadMovsByMonth(); // array of {period:'YYYY-MM', entradas, saidas}
   const labels = months.map(m => m.period);
   const entradas = months.map(m => Number(m.entradas || 0));
   const saidas = months.map(m => Number(m.saidas || 0));
@@ -180,108 +180,19 @@ async function renderUsuarios(){
   const res = await fetch('listar_movimentacoes.php', {credentials:'same-origin'});
   const movs = await res.json();
   const userMap = {}, userItens = {};
-
-  // Filtro de período
-  const filterStart = document.getElementById('filter-start').value;
-  const filterEnd   = document.getElementById('filter-end').value;
-
   movs.forEach(m => {
     if (m.tipo !== 'saida') return;
-
-    // Aplicar filtro de data
-    if (filterStart && m.data && m.data < filterStart) return;
-    if (filterEnd   && m.data && m.data.slice(0,10) > filterEnd) return;
-
-    const user = (m.recebido_por && m.recebido_por.trim()) ? m.recebido_por.trim() : 'Não informado';
+    const user = m.responsavel || 'Não informado';
     userMap[user] = (userMap[user]||0) + Number(m.quantidade || 0);
-    userItens[user] = userItens[user] || [];
-    userItens[user].push({
-      nome:       m.nome || ('#'+m.item_id),
-      numero:     m.numero_item || '',
-      quantidade: Number(m.quantidade || 0),
-      data:       m.data || '',
-      responsavel: m.responsavel || ''
-    });
+    userItens[user] = userItens[user] || {};
+    const key = (m.nome || ('#'+m.item_id)) + (m.numero_item ? ` (Nº ${m.numero_item})` : '');
+    userItens[user][key] = (userItens[user][key]||0) + Number(m.quantidade || 0);
   });
-
   const arr = Object.entries(userMap).sort((a,b)=>b[1]-a[1]).slice(0, Number(document.getElementById('filter-topn').value || 5));
   const labels = arr.map(a=>a[0]), data = arr.map(a=>a[1]);
   state.usuariosItensMap = userItens;
-
-  const cfg = {
-    type: 'bar',
-    data: { labels, datasets:[{ label:'Itens recebidos', data, backgroundColor:'#00bcd4' }] },
-    options: {
-      indexAxis:'y', responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{ callbacks:{ label: ctx => `${ctx.raw} itens recebidos` } }
-      },
-      scales:{ x:{beginAtZero:true} },
-      onClick: (evt, elements) => {
-        if (!elements.length) return;
-        const idx = elements[0].index;
-        const nomeUsuario = labels[idx];
-        openUserDrillModal(nomeUsuario);
-      }
-    }
-  };
+  const cfg = { type:'bar', data:{ labels, datasets:[{ label:'Itens', data, backgroundColor:'#00bcd4' }] }, options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ x:{beginAtZero:true} } } };
   createOrUpdateChart('chartUsuariosMaisSolicitaram', cfg);
-
-  // Sobrescreve onclick genérico para abrir modal do colaborador
-  const canvasU = document.getElementById('chartUsuariosMaisSolicitaram');
-  canvasU.onclick = function(evt){
-    const chart = state.charts['chartUsuariosMaisSolicitaram'];
-    if (!chart) return;
-    const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-    if (points.length) openUserDrillModal(labels[points[0].index]);
-  };
-}
-
-// Modal de drill do colaborador — mostra todos os itens que ele recebeu
-function openUserDrillModal(nomeUsuario){
-  const modal = document.getElementById('modal-details');
-  modal.style.display = 'flex';
-  document.getElementById('modal-title').textContent = `Itens recebidos por: ${nomeUsuario}`;
-  document.getElementById('modal-export-pdf').onclick = () => exportDrillPdf(`Itens - ${nomeUsuario}`);
-
-  const itens = state.usuariosItensMap[nomeUsuario] || [];
-  if (!itens.length) {
-    document.getElementById('modal-content').innerHTML = '<p>Nenhum item encontrado para este colaborador.</p>';
-    return;
-  }
-
-  // Agrupa por EPI e soma quantidades
-  const agrupado = {};
-  itens.forEach(i => {
-    const key = i.nome + (i.numero ? ` (Nº ${i.numero})` : '');
-    if (!agrupado[key]) agrupado[key] = { total: 0, datas: [] };
-    agrupado[key].total += i.quantidade;
-    if (i.data) agrupado[key].datas.push(i.data.slice(0,10));
-  });
-
-  const table = document.createElement('table');
-  table.className = 'mini-table';
-  table.innerHTML = `<thead><tr>
-    <th>EPI</th>
-    <th style="text-align:center">Qtd Total</th>
-    <th>Última Retirada</th>
-  </tr></thead>`;
-  const tbody = document.createElement('tbody');
-
-  Object.entries(agrupado)
-    .sort((a,b) => b[1].total - a[1].total)
-    .forEach(([key, val]) => {
-      const tr = document.createElement('tr');
-      const ultimaData = val.datas.sort().reverse()[0] || '-';
-      tr.innerHTML = `<td>${escapeHtml(key)}</td><td style="text-align:center;font-weight:700">${val.total}</td><td>${escapeHtml(ultimaData)}</td>`;
-      tbody.appendChild(tr);
-    });
-
-  table.appendChild(tbody);
-  document.getElementById('modal-content').innerHTML = '';
-  document.getElementById('modal-content').appendChild(table);
-  document.getElementById('modal-pagination').innerHTML = '';
 }
 
 // Atualiza KPIs
@@ -486,9 +397,9 @@ async function init(){
 
   // carrega dados iniciais
   await loadData();
-  // ajustar datas default (último mês)
+  // ajustar datas default (últimos 6 meses)
   const end = new Date();
-  const start = new Date(end.getFullYear(), end.getMonth() - 1, end.getDate());
+  const start = new Date(end.getFullYear(), end.getMonth() - 5, 1);
   document.getElementById('filter-start').value = start.toISOString().slice(0,10);
   document.getElementById('filter-end').value = end.toISOString().slice(0,10);
 
@@ -534,6 +445,85 @@ function showDetail(type){
   }
 }
 
+
+// Carrega custos por item nas saídas
+async function loadCusto(){
+  const start = document.getElementById('filter-start').value || '';
+  const end   = document.getElementById('filter-end').value || '';
+  const topN  = Number(document.getElementById('filter-topn').value || 5);
+  const url   = new URL('api_movimentacoes_aggregate.php', location.href);
+  url.searchParams.set('action', 'custo');
+  if (start) url.searchParams.set('start', start);
+  if (end)   url.searchParams.set('end', end);
+  url.searchParams.set('topN', topN);
+  const res  = await fetch(url.toString(), {credentials:'same-origin'});
+  const json = await res.json();
+  return (json.status === 'ok') ? json : { data: [], custo_geral: 0 };
+}
+
+// Render gráfico de custo total por EPI
+async function renderCusto(){
+  const result = await loadCusto();
+  const rows   = result.data || [];
+  const custoGeral = result.custo_geral || 0;
+
+  // Atualiza KPI custo geral
+  const kpiEl = document.getElementById('kpi-custo-value');
+  if (kpiEl) kpiEl.textContent = 'R$ ' + custoGeral.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  if (!rows.length) {
+    // Sem dados — mostra mensagem no canvas
+    const ctx = document.getElementById('chartCusto');
+    if (ctx) {
+      if (state.charts['chartCusto']) { state.charts['chartCusto'].destroy(); delete state.charts['chartCusto']; }
+      const c = ctx.getContext('2d');
+      c.clearRect(0,0,ctx.width,ctx.height);
+      c.font = '14px Roboto, Arial';
+      c.fillStyle = '#888';
+      c.fillText('Nenhum item com custo cadastrado no período.', 10, 40);
+    }
+    return;
+  }
+
+  const labels = rows.map(r => (r.nome || '') + (r.numero_item ? ` (Nº ${r.numero_item})` : ''));
+  const data   = rows.map(r => parseFloat(r.custo_total || 0));
+
+  const cfg = {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Custo Total (R$)',
+        data,
+        backgroundColor: '#7b1fa2',
+        borderRadius: 4
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => 'R$ ' + ctx.raw.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})
+          }
+        }
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+          ticks: {
+            callback: v => 'R$ ' + v.toLocaleString('pt-BR')
+          }
+        }
+      }
+    }
+  };
+  createOrUpdateChart('chartCusto', cfg);
+}
+
 // refreshAll
 async function refreshAll(){
   await updateKPIs();
@@ -542,6 +532,7 @@ async function refreshAll(){
   await renderEntradasSaidas();
   await renderVencimento();
   await renderUsuarios();
+  await renderCusto();
 }
 
 // start
