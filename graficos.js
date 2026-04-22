@@ -39,11 +39,11 @@ async function loadTopItems(){
 }
 
 // Usa endpoint agregado para months (entradas/saídas)
-async function loadMovsByMonth(){
+async function loadMovsByDay(){
   const start = document.getElementById('filter-start').value || '';
   const end = document.getElementById('filter-end').value || '';
   const url = new URL('api_movimentacoes_aggregate.php', location.href);
-  url.searchParams.set('action','months');
+  url.searchParams.set('action','days');
   if (start) url.searchParams.set('start', start);
   if (end) url.searchParams.set('end', end);
   const res = await fetch(url.toString(), {credentials:'same-origin'});
@@ -130,7 +130,7 @@ async function renderMaisMovimentados(){
 
 // Render Entradas/Saídas (agregado por months - usa API meses)
 async function renderEntradasSaidas(){
-  const months = await loadMovsByMonth(); // array of {period:'YYYY-MM', entradas, saidas}
+  const months = await loadMovsByDay(); // array of {period:'YYYY-MM', entradas, saidas}
   const labels = months.map(m => m.period);
   const entradas = months.map(m => Number(m.entradas || 0));
   const saidas = months.map(m => Number(m.saidas || 0));
@@ -227,6 +227,15 @@ async function renderUsuarios(){
     }
   };
   createOrUpdateChart('chartUsuariosMaisSolicitaram', cfg);
+
+  // Sobrescreve onclick genérico para abrir modal do colaborador
+  const canvasU = document.getElementById('chartUsuariosMaisSolicitaram');
+  canvasU.onclick = function(evt){
+    const chart = state.charts['chartUsuariosMaisSolicitaram'];
+    if (!chart) return;
+    const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+    if (points.length) openUserDrillModal(labels[points[0].index]);
+  };
 }
 
 // Modal de drill do colaborador — mostra todos os itens que ele recebeu
