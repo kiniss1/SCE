@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="graficos.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <!-- jsPDF + autotable para PDF client-side -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
@@ -14,6 +15,7 @@
 <header>
     <h1>Gráficos de Controle de EPI</h1>
 </header>
+
 <nav class="menu">
     <div class="nav-links">
         <a href="/SCE_php_teste/" class="menu-btn"><span class="material-icons">home</span>Início</a>
@@ -24,31 +26,47 @@
 </nav>
 
 <main class="container" role="main" aria-labelledby="titulo-graficos">
-    <h2 id="titulo-graficos"><span class="material-icons" aria-hidden="true">bar_chart</span> Painel Visual de Indicadores</h2>
 
-    <section class="filters" aria-label="Filtros do painel">
-        <div class="filters-left">
-            <label>Período:
-                <div class="period-inputs">
-                    <input type="date" id="filter-start" aria-label="Data início">
-                    <span class="sep">a</span>
-                    <input type="date" id="filter-end" aria-label="Data fim">
+    <!-- Painel Header -->
+    <div class="painel-header">
+        <div class="painel-header-top">
+            <span class="material-icons">bar_chart</span>
+            <h2 id="titulo-graficos">Painel Visual de Indicadores</h2>
+        </div>
+
+        <section class="filters" aria-label="Filtros do painel">
+            <div class="filters-left">
+                <div class="filter-group">
+                    <span class="filter-label">Período</span>
+                    <div class="period-inputs">
+                        <input type="date" id="filter-start" aria-label="Data início">
+                        <span class="sep">→</span>
+                        <input type="date" id="filter-end" aria-label="Data fim">
+                    </div>
                 </div>
-            </label>
-            <label>Top N:
-                <select id="filter-topn" aria-label="Top N">
-                    <option value="5">Top 5</option>
-                    <option value="10">Top 10</option>
-                    <option value="20">Top 20</option>
-                </select>
-            </label>
-        </div>
-        <div class="filters-right">
-            <button id="btn-refresh" class="btn" title="Atualizar"><span class="material-icons">refresh</span> Atualizar</button>
-            <button id="btn-export-all" class="btn btn-outline">Exportar tudo (PNG/PDF)</button>
-        </div>
-    </section>
 
+                <div class="filter-group">
+                    <span class="filter-label">Top N</span>
+                    <select id="filter-topn" class="topn-select" aria-label="Top N">
+                        <option value="5">Top 5</option>
+                        <option value="10">Top 10</option>
+                        <option value="20">Top 20</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="filters-right">
+                <button id="btn-refresh" class="btn" title="Atualizar painel">
+                    <span class="material-icons">refresh</span> Atualizar
+                </button>
+                <button id="btn-export-all" class="btn btn-outline" title="Exportar PNG/PDF">
+                    <span class="material-icons">download</span> Exportar tudo
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- KPI row -->
     <section class="kpi-row" aria-label="Indicadores principais">
         <div class="kpi-card" id="kpi-total">
             <div class="kpi-title">EPIs em estoque</div>
@@ -70,22 +88,23 @@
             <div class="kpi-value" id="kpi-venc-value">—</div>
             <div class="kpi-sub">até 30 dias</div>
         </div>
-        <div class="kpi-card" style="border-left:4px solid #7b1fa2;">
+        <div class="kpi-card" id="kpi-custo">
             <div class="kpi-title">Custo Total (Período)</div>
-            <div class="kpi-value" id="kpi-custo-value" style="color:#7b1fa2;">—</div>
+            <div class="kpi-value" id="kpi-custo-value">—</div>
             <div class="kpi-sub">EPIs liberados no período</div>
         </div>
     </section>
 
+        <!-- Grid of charts -->
     <section class="charts-grid" id="charts-grid" aria-label="Gráficos">
 
-        <!-- Card 1: Estoque -->
+        <!-- Card 1: Estoque Total -->
         <article class="chart-card" id="card-estoque-total">
             <div class="card-header">
                 <h3>Total de EPIs em Estoque</h3>
                 <div class="card-actions">
                     <select class="chart-type" data-target="chartEstoqueTotal">
-                        <option value="bar">Bar</option>
+                        <option value="bar">Horizontal</option>
                         <option value="pie">Pizza</option>
                     </select>
                     <button class="btn btn-sm" data-export="chartEstoqueTotal">Exportar PNG</button>
@@ -111,7 +130,7 @@
             <div class="card-footer"><button class="btn btn-outline" data-detail="mais-movimentados">Ver detalhes</button></div>
         </article>
 
-        <!-- Card 3: Usuários (quem RECEBEU) -->
+        <!-- Card 3: Usuários que mais RECEBERAM -->
         <article class="chart-card" id="card-usuarios">
             <div class="card-header">
                 <h3>Usuários que mais receberam EPIs</h3>
@@ -124,9 +143,7 @@
                 </div>
             </div>
             <div class="card-body"><canvas id="chartUsuariosMaisSolicitaram"></canvas></div>
-            <div class="card-footer">
-                <small style="color:#888;">Clique no colaborador para ver os itens recebidos.</small>
-            </div>
+            <div class="card-footer"><button class="btn btn-outline" data-detail="usuarios">Ver detalhes</button></div>
         </article>
 
         <!-- Card 4: Custo Total -->
@@ -139,16 +156,16 @@
             </div>
             <div class="card-body"><canvas id="chartCusto"></canvas></div>
             <div class="card-footer">
-                <small style="color:#888;">Cadastre o custo unitário na aba <strong>Estoque Atual</strong>.</small>
+                <small style="color:#888;font-size:0.8rem;">Baseado no custo cadastrado em Estoque Atual</small>
             </div>
         </article>
 
-        <!-- Card 5: Entradas/Saídas com filtro de período -->
+        <!-- Card 5: Entradas/Saídas por Dia -->
         <article class="chart-card" id="card-entradas-saidas">
             <div class="card-header">
                 <h3>Entradas / Saídas por Dia</h3>
                 <div class="card-actions">
-                    <select id="filter-periodo-es" style="padding:4px 8px;border-radius:6px;border:1px solid #d0e8ff;font-size:0.9rem;">
+                    <select id="filter-periodo-es" style="background:var(--accent);border:1px solid #c9e0f5;border-radius:6px;padding:4px 7px;font-size:0.82rem;color:var(--primary);font-weight:600;cursor:pointer;outline:none;">
                         <option value="1">Último mês</option>
                         <option value="2">Últimos 2 meses</option>
                         <option value="3">Últimos 3 meses</option>
@@ -183,6 +200,7 @@
     </section>
 </main>
 
+<!-- Modal de drill-through / detalhes -->
 <div id="modal-details" class="modal-bg" style="display:none;">
     <div class="modal-details" role="dialog" aria-modal="true">
         <span class="modal-details-close" id="modalCloseBtn">&times;</span>
