@@ -37,18 +37,30 @@ async function loadTopItems(){
 
 // Agrupa por DIA — usa o filtro de período do select do card
 async function loadMovsByDay(){
+  // Busca todas as movimentações e agrega por dia client-side
+  // (mais confiável — não depende de endpoint intermediário)
   const meses  = Number(document.getElementById('filter-periodo-es').value || 1);
   const endDt  = new Date();
   const startDt = new Date(endDt.getFullYear(), endDt.getMonth() - (meses - 1), 1);
-  const start  = startDt.toISOString().slice(0,10);
-  const end    = endDt.toISOString().slice(0,10);
-  const url    = new URL('api_movimentacoes_aggregate.php', location.href);
-  url.searchParams.set('action','days');
-  url.searchParams.set('start', start);
-  url.searchParams.set('end', end);
-  const res  = await fetch(url.toString(), {credentials:'same-origin'});
-  const json = await res.json();
-  return (json.status === 'ok') ? json.data : [];
+  // Zera hora para pegar o dia completo
+  startDt.setHours(0,0,0,0);
+  endDt.setHours(23,59,59,999);
+
+  const res  = await fetch('listar_movimentacoes.php', {credentials:'same-origin'});
+  const movs = await res.json();
+
+  const map = {};
+  movs.forEach(m => {
+    if (!m.data) return;
+    const d = new Date(m.data.replace(' ','T'));
+    if (d < startDt || d > endDt) return;
+    const day = m.data.slice(0,10);
+    if (!map[day]) map[day] = { period: day, entradas: 0, saidas: 0 };
+    if (m.tipo === 'entrada') map[day].entradas += Number(m.quantidade||0);
+    if (m.tipo === 'saida')   map[day].saidas   += Number(m.quantidade||0);
+  });
+
+  return Object.values(map).sort((a,b) => a.period.localeCompare(b.period));
 }
 
 async function loadCusto(){
