@@ -18,7 +18,7 @@
 
 <nav class="menu">
     <div class="nav-links">
-        <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
+        <a href="/SCE_php_teste/" class="menu-btn"><span class="material-icons">home</span>Início</a>
         <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
         <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
         <a href="graficos.php" class="menu-btn active"><span class="material-icons">bar_chart</span>Gráficos</a>
@@ -123,7 +123,7 @@
         <!-- Card 3 -->
         <article class="chart-card" id="card-entradas-saidas">
             <div class="card-header">
-                <h3>Entradas / Saídas (Últimos 6 meses)</h3>
+                <h3>Entradas / Saídas (Último mês)</h3>
                 <div class="card-actions">
                     <select class="chart-type" data-target="chartEntradasSaidas" aria-label="Tipo do gráfico">
                         <option value="line">Linha</option>
