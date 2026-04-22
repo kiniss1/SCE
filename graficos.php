@@ -76,6 +76,11 @@
             <div class="kpi-value" id="kpi-venc-value">—</div>
             <div class="kpi-sub">até 30 dias</div>
         </div>
+        <div class="kpi-card" id="kpi-custo" style="border-left:4px solid #7b1fa2;">
+            <div class="kpi-title">Custo Total (Período)</div>
+            <div class="kpi-value" id="kpi-custo-value" style="color:#7b1fa2;">—</div>
+            <div class="kpi-sub">EPIs liberados no período</div>
+        </div>
     </section>
 
     <!-- Grid of charts -->
@@ -123,7 +128,7 @@
         <!-- Card 3 -->
         <article class="chart-card" id="card-entradas-saidas">
             <div class="card-header">
-                <h3>Entradas / Saídas (Último mês)</h3>
+                <h3>Entradas / Saídas (Últimos 6 meses)</h3>
                 <div class="card-actions">
                     <select class="chart-type" data-target="chartEntradasSaidas" aria-label="Tipo do gráfico">
                         <option value="line">Linha</option>
@@ -141,6 +146,26 @@
         </article>
 
         <!-- Card 4 -->
+        <article class="chart-card" id="card-vencimento">
+            <div class="card-header">
+                <h3>EPIs Próximos do Vencimento (30 dias)</h3>
+                <div class="card-actions">
+                    <select class="chart-type" data-target="chartVencimento" aria-label="Tipo do gráfico">
+                        <option value="bar">Bar</option>
+                        <option value="pie">Pizza</option>
+                    </select>
+                    <button class="btn btn-sm" data-export="chartVencimento" aria-label="Exportar gráfico">Exportar PNG</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="chartVencimento" aria-label="EPIs próximos do vencimento"></canvas>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline" data-detail="vencimento">Ver detalhes</button>
+            </div>
+        </article>
+
+        <!-- Card 5 -->
         <article class="chart-card" id="card-usuarios">
             <div class="card-header">
                 <h3>Usuários que mais solicitaram itens</h3>
@@ -159,24 +184,19 @@
                 <button class="btn btn-outline" data-detail="usuarios">Ver detalhes</button>
             </div>
         </article>
-
-        <!-- Card 5 -->
-        <article class="chart-card" id="card-vencimento">
+        <!-- Card Custo -->
+        <article class="chart-card" id="card-custo">
             <div class="card-header">
-                <h3>EPIs Próximos do Vencimento (30 dias)</h3>
+                <h3>Custo Total por EPI Liberado (R$)</h3>
                 <div class="card-actions">
-                    <select class="chart-type" data-target="chartVencimento" aria-label="Tipo do gráfico">
-                        <option value="bar">Bar</option>
-                        <option value="pie">Pizza</option>
-                    </select>
-                    <button class="btn btn-sm" data-export="chartVencimento" aria-label="Exportar gráfico">Exportar PNG</button>
+                    <button class="btn btn-sm" data-export="chartCusto" aria-label="Exportar gráfico">Exportar PNG</button>
                 </div>
             </div>
             <div class="card-body">
-                <canvas id="chartVencimento" aria-label="EPIs próximos do vencimento"></canvas>
+                <canvas id="chartCusto" aria-label="Custo total por EPI"></canvas>
             </div>
             <div class="card-footer">
-                <button class="btn btn-outline" data-detail="vencimento">Ver detalhes</button>
+                <small style="color:#888;">Cadastre o custo unitário de cada EPI na aba <strong>Estoque Atual</strong>.</small>
             </div>
         </article>
     </section>
