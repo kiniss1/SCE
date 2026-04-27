@@ -74,7 +74,7 @@ nav.menu { background:#fff; padding:10px 0; border-bottom:1px solid #daeaf8; dis
 .btn-sm { padding:6px 10px; font-size:0.86rem; border-radius:7px; }
 
 /* KPI ROW */
-.kpi-row { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:var(--gap); }
+.kpi-row { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:var(--gap); }
 .kpi-card {
   background:var(--card);
   border-radius:var(--radius);
@@ -128,7 +128,8 @@ nav.menu { background:#fff; padding:10px 0; border-bottom:1px solid #daeaf8; dis
 .mini-table tr:hover td { background:#f5f9ff; }
 
 /* RESPONSIVE */
-@media (max-width:1100px){ .kpi-row{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:1200px){ .kpi-row{grid-template-columns:repeat(3,1fr)} }
+@media (max-width:800px){ .kpi-row{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:980px){ .charts-grid{grid-template-columns:1fr} .kpi-row{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:620px){ .kpi-row{grid-template-columns:1fr 1fr} .filters{flex-direction:column;align-items:stretch} .filters-left{flex-direction:column} }
 @media (max-width:420px){ .kpi-row{grid-template-columns:1fr} }
