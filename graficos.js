@@ -424,6 +424,21 @@ async function exportDashboardPDF(){
   doc.save('painel_estoque_epi.pdf');
 }
 
+// ─── Custo em estoque (valor patrimonial atual) ──────────────────────────────
+
+async function loadCustoEstoque() {
+  try {
+    const res  = await fetch('custo_estoque.php', {credentials:'same-origin'});
+    const data = await res.json();
+    const el   = document.getElementById('kpi-custo-estoque-value');
+    if (el && data.status === 'ok') {
+      el.textContent = 'R\xa0' + Number(data.custo_estoque).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2, maximumFractionDigits: 2
+      });
+    }
+  } catch(e) { console.warn('custo_estoque:', e); }
+}
+
 // ─── refreshAll ──────────────────────────────────────────────────────────────
 
 async function refreshAll(){
