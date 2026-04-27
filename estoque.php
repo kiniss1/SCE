@@ -215,9 +215,10 @@ $desfazer_token = $_SESSION['desfazer_token'];
     <table id="tabela-estoque" aria-describedby="titulo-estoque">
         <thead>
             <tr>
-                <th style="width:42%;">EPI</th>
-                <th style="width:18%;">Nº do EPI</th>
-                <th style="width:12%;">Quantidade</th>
+                <th style="width:34%;">EPI</th>
+                <th style="width:14%;">Nº do EPI</th>
+                <th style="width:10%;">Quantidade</th>
+                <th style="width:14%;">Custo Unit. (R$)</th>
                 <th style="width:28%;">Movimentar</th>
             </tr>
         </thead>
@@ -307,12 +308,22 @@ function atualizarTabelaEstoque() {
             <td>${eq.nome}</td>
             <td>${eq.numero_item || ''}</td>
             <td>${eq.quantidade}</td>
+            <td>
+                <div style="display:flex;align-items:center;gap:4px;">
+                    <input type="number" id="custo-input-${eq.id}" min="0" step="0.01"
+                        value="${Number(eq.custo_unitario || 0).toFixed(2)}"
+                        style="width:80px;padding:4px 6px;border:1px solid #d0e8ff;border-radius:6px;font-size:0.93rem;">
+                    <button class="btn btn--small btn--outline" onclick="salvarCusto(${eq.id})" title="Salvar custo" style="padding:4px 7px;">
+                        <span class="material-icons" style="font-size:0.95rem;">save</span>
+                    </button>
+                </div>
+            </td>
             <td class="actions-btns">
-                <input type="number" id="personalizado-qtd-input-${idx}-entrada" min="1" placeholder="+" style="width:72px;margin-right:6px;">
+                <input type="number" id="personalizado-qtd-input-${idx}-entrada" min="1" placeholder="+" style="width:60px;margin-right:4px;">
                 <button class="btn btn--small btn--outline" onclick="movimentarPersonalizado(${idx},'entrada')" title="Adicionar">Entrar</button>
-                <input type="number" id="personalizado-qtd-input-${idx}-saida" min="1" placeholder="-" style="width:72px;margin-left:8px;margin-right:6px;">
+                <input type="number" id="personalizado-qtd-input-${idx}-saida" min="1" placeholder="-" style="width:60px;margin-left:6px;margin-right:4px;">
                 <button class="btn btn--small btn--outline" onclick="movimentarPersonalizado(${idx},'saida')" title="Remover">Sair</button>
-                <button class="btn btn--small" style="background:var(--danger);color:#fff;margin-left:8px;" onclick="removerEquipamento(${eq.id})" title="Remover EPI">
+                <button class="btn btn--small" style="background:var(--danger);color:#fff;margin-left:6px;" onclick="removerEquipamento(${eq.id})" title="Remover EPI">
                     <span class="material-icons" style="font-size:1rem;">delete</span>
                 </button>
             </td>
@@ -356,6 +367,24 @@ function removerEquipamento(id) {
         if (data.status === 'ok') { alert('EPI removido com sucesso.'); atualizarTudo(); }
         else alert('Erro ao remover: ' + (data.mensagem || data.message || JSON.stringify(data)));
     }).catch(e => alert('Erro na requisição: ' + e));
+}
+
+
+function salvarCusto(id) {
+    const input = document.getElementById('custo-input-' + id);
+    const custo = parseFloat(input.value.replace(',', '.'));
+    if (isNaN(custo) || custo < 0) { alert('Valor inválido.'); return; }
+    fetch('salvar_custo.php', {
+        method: 'POST',
+        body: new URLSearchParams({ id, custo })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            input.style.borderColor = '#43a047';
+            setTimeout(() => input.style.borderColor = '#d0e8ff', 1800);
+        } else alert('Erro ao salvar custo.');
+    });
 }
 
 function atualizarTudo() {
