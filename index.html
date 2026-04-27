@@ -15,8 +15,8 @@
     <div class="header-brand">
       <span class="material-icons">security</span>
       <div>
-        <h1>SCE — Sistema de Controle de EPI</h1>
-        <span class="sub">Gestão de Equipamentos de Proteção Individual</span>
+        <h1>GEM — Sistema de Controle de EPI</h1>
+        <span class="sub">Gestão de Estoque e Materiais</span>
       </div>
     </div>
   </div>
@@ -97,7 +97,7 @@
       <div class="field-row">
         <div class="field">
           <label>Nº do EPI</label>
-          <input type="text" id="numero-item" placeholder="Ex: 0001">
+          <input type="text" id="numero-item" placeholder="Ex: 986000">
         </div>
         <div class="field">
           <label>Quantidade Inicial</label>
@@ -157,19 +157,19 @@
       </div>
       <div class="field">
         <label>Responsável</label>
-        <input type="text" id="usuario" placeholder="Preenchido pela matrícula" readonly>
+        <input type="text" id="usuario" placeholder="Preenchido automático pela matrícula" readonly>
       </div>
 
       <div class="field">
         <label>Matrícula de Quem Recebeu</label>
         <div class="field-with-action">
-          <input type="text" id="matricula-recebido" placeholder="Digite a matrícula (opcional)" maxlength="10" oninput="buscarRecebidoPor()">
+          <input type="text" id="matricula-recebido" placeholder="Digite a matrícula" maxlength="10" oninput="buscarRecebidoPor()">
           <span id="status-matricula-recebido" class="field-status"></span>
         </div>
       </div>
       <div class="field">
         <label>Recebido por</label>
-        <input type="text" id="recebido-por" placeholder="Preenchido pela matrícula" readonly>
+        <input type="text" id="recebido-por" placeholder="Preenchido automático pela matrícula" readonly>
       </div>
 
       <div class="field">
