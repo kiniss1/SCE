@@ -18,6 +18,7 @@
         <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
         <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
         <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
+        <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
         <a href="graficos.php" class="menu-btn active"><span class="material-icons">bar_chart</span>Gráficos</a>
     </div>
 </nav>
@@ -73,6 +74,11 @@
             <div class="kpi-title">Custo Total (Período)</div>
             <div class="kpi-value" id="kpi-custo-value">—</div>
             <div class="kpi-sub">EPIs liberados no período</div>
+        </div>
+        <div class="kpi-card" id="kpi-custo-estoque" style="border-top-color:#00897b;">
+            <div class="kpi-title">Valor em Estoque</div>
+            <div class="kpi-value" id="kpi-custo-estoque-value" style="color:#00897b;font-size:1.2rem;">—</div>
+            <div class="kpi-sub">Custo dos EPIs em estoque agora</div>
         </div>
     </section>
 
