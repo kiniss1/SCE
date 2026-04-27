@@ -223,6 +223,7 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
     <a href="/"><span class="material-icons">home</span>Início</a>
     <a href="estoque.php"><span class="material-icons">inventory_2</span>Estoque Atual</a>
     <a href="historico.php" class="active"><span class="material-icons">history</span>Histórico</a>
+    <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
     <a href="graficos.php"><span class="material-icons">bar_chart</span>Gráficos</a>
 </nav>
 
