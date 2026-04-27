@@ -3,7 +3,6 @@
 const state = {
   itens: [],
   charts: {},
-  topN: 5,
   filterStart: null,
   filterEnd: null,
   usuariosItensMap: {}
@@ -24,12 +23,10 @@ async function loadItems(){
 async function loadTopItems(){
   const start = document.getElementById('filter-start').value || '';
   const end   = document.getElementById('filter-end').value || '';
-  const topN  = Number(document.getElementById('filter-topn').value || 5);
   const url   = new URL('api_movimentacoes_aggregate.php', location.href);
   url.searchParams.set('action','top_items');
   if (start) url.searchParams.set('start', start);
   if (end)   url.searchParams.set('end', end);
-  url.searchParams.set('topN', topN);
   const res  = await fetch(url.toString(), {credentials:'same-origin'});
   const json = await res.json();
   return (json.status === 'ok') ? json.data : [];
@@ -66,12 +63,10 @@ async function loadMovsByDay(){
 async function loadCusto(){
   const start = document.getElementById('filter-start').value || '';
   const end   = document.getElementById('filter-end').value || '';
-  const topN  = Number(document.getElementById('filter-topn').value || 5);
   const url   = new URL('api_movimentacoes_aggregate.php', location.href);
   url.searchParams.set('action','custo');
   if (start) url.searchParams.set('start', start);
   if (end)   url.searchParams.set('end', end);
-  url.searchParams.set('topN', topN);
   const res  = await fetch(url.toString(), {credentials:'same-origin'});
   const json = await res.json();
   return (json.status === 'ok') ? json : { data: [], custo_geral: 0 };
@@ -110,8 +105,7 @@ function createOrUpdateChart(ctxId, cfg){
 // ─── Renders ─────────────────────────────────────────────────────────────────
 
 async function renderEstoque(){
-  const topN   = Number(document.getElementById('filter-topn').value || 5);
-  const sorted = state.itens.slice().sort((a,b)=>Number(b.quantidade||0)-Number(a.quantidade||0)).slice(0, topN);
+  const sorted = state.itens.slice().sort((a,b)=>Number(b.quantidade||0)-Number(a.quantidade||0));
   const labels = sorted.map(i => (i.nome||'SEM_NOME') + (i.numero_item ? ` (Nº ${i.numero_item})` : ''));
   const data   = sorted.map(i => Number(i.quantidade||0));
   createOrUpdateChart('chartEstoqueTotal', {
@@ -187,7 +181,7 @@ async function renderVencimento(){
       map[nome] = (map[nome]||0) + Number(m.quantidade||0);
     }
   });
-  const arr    = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0, Number(document.getElementById('filter-topn').value||5));
+  const arr    = Object.entries(map).sort((a,b)=>b[1]-a[1]);
   const labels = arr.map(a => a[0]);
   const data   = arr.map(a => a[1]);
   createOrUpdateChart('chartVencimento', {
@@ -223,8 +217,7 @@ async function renderUsuarios(){
     });
   });
 
-  const topN   = Number(document.getElementById('filter-topn').value||5);
-  const arr    = Object.entries(userMap).sort((a,b)=>b[1]-a[1]).slice(0, topN);
+  const arr    = Object.entries(userMap).sort((a,b)=>b[1]-a[1]);
   const labels = arr.map(a => a[0]);
   const data   = arr.map(a => a[1]);
   state.usuariosItensMap = userItens;
