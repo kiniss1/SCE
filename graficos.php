@@ -39,14 +39,7 @@
                         <input type="date" id="filter-end">
                     </div>
                 </div>
-                <div class="filter-group">
-                    <span class="filter-label">Top N</span>
-                    <select id="filter-topn" class="topn-select">
-                        <option value="5">Top 5</option>
-                        <option value="10">Top 10</option>
-                        <option value="20">Top 20</option>
-                    </select>
-                </div>
+
             </div>
             <div class="filters-right">
                 <button id="btn-refresh" class="btn"><span class="material-icons">refresh</span> Atualizar</button>
