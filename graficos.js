@@ -449,6 +449,7 @@ async function refreshAll(){
   await renderCusto();
   await renderEntradasSaidas();
   await renderVencimento();
+  await loadCustoEstoque();
 }
 
 // ─── showDetail ──────────────────────────────────────────────────────────────
