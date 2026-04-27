@@ -132,6 +132,30 @@
         <span class="material-icons">bar_chart</span>Ver Gráficos
       </a>
     </div>
+    <button class="nav-hamburger" onclick="abrirDrawer()" aria-label="Menu">
+      <span class="material-icons">menu</span>
+    </button>
+  </div>
+
+  <!-- Drawer mobile -->
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-drawer-overlay" onclick="fecharDrawer()"></div>
+    <div class="nav-drawer-panel">
+      <div class="nav-drawer-header">
+        <span>GEM — EPI</span>
+        <button class="nav-drawer-close" onclick="fecharDrawer()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="nav-drawer-links">
+        <a href="/" class="active"><span class="material-icons">home</span>Início</a>
+        <a href="estoque.php"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+        <a href="historico.php"><span class="material-icons">history</span>Histórico</a>
+        <a href="fichas_epi.php"><span class="material-icons">description</span>Fichas de EPI</a>
+        <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
+        <a href="graficos.php" class="drawer-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -344,6 +368,17 @@
   </div>
 </div>
 
+<script>
+function abrirDrawer() {
+  document.getElementById('nav-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function fecharDrawer() {
+  document.getElementById('nav-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharDrawer(); });
+</script>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <script src="script.js"></script>
 </body>
