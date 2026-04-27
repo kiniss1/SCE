@@ -18,7 +18,7 @@
 
 <nav class="menu">
     <div class="nav-links">
-        <a href="/SCE_php_teste/" class="menu-btn"><span class="material-icons">home</span>Início</a>
+        <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
         <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
         <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
         <a href="graficos.php" class="menu-btn active"><span class="material-icons">bar_chart</span>Gráficos</a>
@@ -26,45 +26,33 @@
 </nav>
 
 <main class="container" role="main" aria-labelledby="titulo-graficos">
+    <h2 id="titulo-graficos"><span class="material-icons" aria-hidden="true">bar_chart</span> Painel Visual de Indicadores</h2>
 
-    <!-- Painel Header -->
-    <div class="painel-header">
-        <div class="painel-header-top">
-            <span class="material-icons">bar_chart</span>
-            <h2 id="titulo-graficos">Painel Visual de Indicadores</h2>
+    <!-- Global filters -->
+    <section class="filters" aria-label="Filtros do painel">
+        <div class="filters-left">
+            <label>Período:
+                <div class="period-inputs">
+                    <input type="date" id="filter-start" aria-label="Data início">
+                    <span class="sep">a</span>
+                    <input type="date" id="filter-end" aria-label="Data fim">
+                </div>
+            </label>
+
+            <label>Top N:
+                <select id="filter-topn" aria-label="Top N">
+                    <option value="5">Top 5</option>
+                    <option value="10">Top 10</option>
+                    <option value="20">Top 20</option>
+                </select>
+            </label>
         </div>
 
-        <section class="filters" aria-label="Filtros do painel">
-            <div class="filters-left">
-                <div class="filter-group">
-                    <span class="filter-label">Período</span>
-                    <div class="period-inputs">
-                        <input type="date" id="filter-start" aria-label="Data início">
-                        <span class="sep">→</span>
-                        <input type="date" id="filter-end" aria-label="Data fim">
-                    </div>
-                </div>
-
-                <div class="filter-group">
-                    <span class="filter-label">Top N</span>
-                    <select id="filter-topn" class="topn-select" aria-label="Top N">
-                        <option value="5">Top 5</option>
-                        <option value="10">Top 10</option>
-                        <option value="20">Top 20</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="filters-right">
-                <button id="btn-refresh" class="btn" title="Atualizar painel">
-                    <span class="material-icons">refresh</span> Atualizar
-                </button>
-                <button id="btn-export-all" class="btn btn-outline" title="Exportar PNG/PDF">
-                    <span class="material-icons">download</span> Exportar tudo
-                </button>
-            </div>
-        </section>
-    </div>
+        <div class="filters-right">
+            <button id="btn-refresh" class="btn" title="Atualizar" aria-label="Atualizar painel"><span class="material-icons">refresh</span> Atualizar</button>
+            <button id="btn-export-all" class="btn btn-outline" title="Exportar imagens/relatório" aria-label="Exportar tudo">Exportar tudo (PNG/PDF)</button>
+        </div>
+    </section>
 
     <!-- KPI row -->
     <section class="kpi-row" aria-label="Indicadores principais">
@@ -88,115 +76,109 @@
             <div class="kpi-value" id="kpi-venc-value">—</div>
             <div class="kpi-sub">até 30 dias</div>
         </div>
-        <div class="kpi-card" id="kpi-custo">
-            <div class="kpi-title">Custo Total (Período)</div>
-            <div class="kpi-value" id="kpi-custo-value">—</div>
-            <div class="kpi-sub">EPIs liberados no período</div>
-        </div>
     </section>
 
-        <!-- Grid of charts -->
+    <!-- Grid of charts -->
     <section class="charts-grid" id="charts-grid" aria-label="Gráficos">
-
-        <!-- Card 1: Estoque Total -->
+        <!-- Card 1 -->
         <article class="chart-card" id="card-estoque-total">
             <div class="card-header">
                 <h3>Total de EPIs em Estoque</h3>
                 <div class="card-actions">
-                    <select class="chart-type" data-target="chartEstoqueTotal">
-                        <option value="bar">Horizontal</option>
+                    <select class="chart-type" data-target="chartEstoqueTotal" aria-label="Tipo do gráfico">
+                        <option value="bar">Bar (horizontal)</option>
                         <option value="pie">Pizza</option>
                     </select>
-                    <button class="btn btn-sm" data-export="chartEstoqueTotal">Exportar PNG</button>
+                    <button class="btn btn-sm" data-export="chartEstoqueTotal" aria-label="Exportar gráfico">Exportar PNG</button>
                 </div>
             </div>
-            <div class="card-body"><canvas id="chartEstoqueTotal"></canvas></div>
-            <div class="card-footer"><button class="btn btn-outline" data-detail="estoque">Ver detalhes</button></div>
+            <div class="card-body">
+                <canvas id="chartEstoqueTotal" aria-label="Gráfico total de EPIs"></canvas>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline" data-detail="estoque">Ver detalhes</button>
+            </div>
         </article>
 
-        <!-- Card 2: Mais Movimentados -->
+        <!-- Card 2 -->
         <article class="chart-card" id="card-mais-movimentados">
             <div class="card-header">
                 <h3>Top EPIs Mais Movimentados</h3>
                 <div class="card-actions">
-                    <select class="chart-type" data-target="chartMaisMovimentados">
+                    <select class="chart-type" data-target="chartMaisMovimentados" aria-label="Tipo do gráfico">
                         <option value="bar">Bar</option>
                         <option value="line">Linha</option>
                     </select>
-                    <button class="btn btn-sm" data-export="chartMaisMovimentados">Exportar PNG</button>
+                    <button class="btn btn-sm" data-export="chartMaisMovimentados" aria-label="Exportar gráfico">Exportar PNG</button>
                 </div>
             </div>
-            <div class="card-body"><canvas id="chartMaisMovimentados"></canvas></div>
-            <div class="card-footer"><button class="btn btn-outline" data-detail="mais-movimentados">Ver detalhes</button></div>
-        </article>
-
-        <!-- Card 3: Usuários que mais RECEBERAM -->
-        <article class="chart-card" id="card-usuarios">
-            <div class="card-header">
-                <h3>Usuários que mais receberam EPIs</h3>
-                <div class="card-actions">
-                    <select class="chart-type" data-target="chartUsuariosMaisSolicitaram">
-                        <option value="bar">Bar</option>
-                        <option value="pie">Pizza</option>
-                    </select>
-                    <button class="btn btn-sm" data-export="chartUsuariosMaisSolicitaram">Exportar PNG</button>
-                </div>
+            <div class="card-body">
+                <canvas id="chartMaisMovimentados" aria-label="Gráfico mais movimentados"></canvas>
             </div>
-            <div class="card-body"><canvas id="chartUsuariosMaisSolicitaram"></canvas></div>
-            <div class="card-footer"><button class="btn btn-outline" data-detail="usuarios">Ver detalhes</button></div>
-        </article>
-
-        <!-- Card 4: Custo Total -->
-        <article class="chart-card" id="card-custo">
-            <div class="card-header">
-                <h3>Custo Total por EPI Liberado (R$)</h3>
-                <div class="card-actions">
-                    <button class="btn btn-sm" data-export="chartCusto">Exportar PNG</button>
-                </div>
-            </div>
-            <div class="card-body"><canvas id="chartCusto"></canvas></div>
             <div class="card-footer">
-                <small style="color:#888;font-size:0.8rem;">Baseado no custo cadastrado em Estoque Atual</small>
+                <button class="btn btn-outline" data-detail="mais-movimentados">Ver detalhes</button>
             </div>
         </article>
 
-        <!-- Card 5: Entradas/Saídas por Dia -->
+        <!-- Card 3 -->
         <article class="chart-card" id="card-entradas-saidas">
             <div class="card-header">
-                <h3>Entradas / Saídas por Dia</h3>
+                <h3>Entradas / Saídas (Últimos 6 meses)</h3>
                 <div class="card-actions">
-                    <select id="filter-periodo-es" style="background:var(--accent);border:1px solid #c9e0f5;border-radius:6px;padding:4px 7px;font-size:0.82rem;color:var(--primary);font-weight:600;cursor:pointer;outline:none;">
-                        <option value="1">Último mês</option>
-                        <option value="2">Últimos 2 meses</option>
-                        <option value="3">Últimos 3 meses</option>
-                    </select>
-                    <select class="chart-type" data-target="chartEntradasSaidas">
+                    <select class="chart-type" data-target="chartEntradasSaidas" aria-label="Tipo do gráfico">
                         <option value="line">Linha</option>
                         <option value="bar">Bar</option>
                     </select>
-                    <button class="btn btn-sm" data-export="chartEntradasSaidas">Exportar PNG</button>
+                    <button class="btn btn-sm" data-export="chartEntradasSaidas" aria-label="Exportar gráfico">Exportar PNG</button>
                 </div>
             </div>
-            <div class="card-body"><canvas id="chartEntradasSaidas"></canvas></div>
-            <div class="card-footer"><button class="btn btn-outline" data-detail="entradas-saidas">Ver detalhes</button></div>
+            <div class="card-body">
+                <canvas id="chartEntradasSaidas" aria-label="Entradas e saídas"></canvas>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline" data-detail="entradas-saidas">Ver detalhes</button>
+            </div>
         </article>
 
-        <!-- Card 6: Vencimento -->
+        <!-- Card 4 -->
         <article class="chart-card" id="card-vencimento">
             <div class="card-header">
                 <h3>EPIs Próximos do Vencimento (30 dias)</h3>
                 <div class="card-actions">
-                    <select class="chart-type" data-target="chartVencimento">
+                    <select class="chart-type" data-target="chartVencimento" aria-label="Tipo do gráfico">
                         <option value="bar">Bar</option>
                         <option value="pie">Pizza</option>
                     </select>
-                    <button class="btn btn-sm" data-export="chartVencimento">Exportar PNG</button>
+                    <button class="btn btn-sm" data-export="chartVencimento" aria-label="Exportar gráfico">Exportar PNG</button>
                 </div>
             </div>
-            <div class="card-body"><canvas id="chartVencimento"></canvas></div>
-            <div class="card-footer"><button class="btn btn-outline" data-detail="vencimento">Ver detalhes</button></div>
+            <div class="card-body">
+                <canvas id="chartVencimento" aria-label="EPIs próximos do vencimento"></canvas>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline" data-detail="vencimento">Ver detalhes</button>
+            </div>
         </article>
 
+        <!-- Card 5 -->
+        <article class="chart-card" id="card-usuarios">
+            <div class="card-header">
+                <h3>Usuários que mais solicitaram itens</h3>
+                <div class="card-actions">
+                    <select class="chart-type" data-target="chartUsuariosMaisSolicitaram" aria-label="Tipo do gráfico">
+                        <option value="bar">Bar</option>
+                        <option value="pie">Pizza</option>
+                    </select>
+                    <button class="btn btn-sm" data-export="chartUsuariosMaisSolicitaram" aria-label="Exportar gráfico">Exportar PNG</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="chartUsuariosMaisSolicitaram" aria-label="Usuários que mais solicitaram"></canvas>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-outline" data-detail="usuarios">Ver detalhes</button>
+            </div>
+        </article>
     </section>
 </main>
 
