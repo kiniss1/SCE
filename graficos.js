@@ -20,6 +20,17 @@ async function loadItems(){
   state.itemNameToId = map;
 }
 
+
+// Helper: retorna URL do listar_movimentacoes com filtro de data aplicado
+function movsUrl() {
+  const start = document.getElementById('filter-start').value || '';
+  const end   = document.getElementById('filter-end').value   || '';
+  const url   = new URL('listar_movimentacoes.php', location.href);
+  if (start) url.searchParams.set('start', start);
+  if (end)   url.searchParams.set('end',   end);
+  return url.toString();
+}
+
 async function loadTopItems(){
   const start = document.getElementById('filter-start').value || '';
   const end   = document.getElementById('filter-end').value || '';
@@ -43,7 +54,9 @@ async function loadMovsByDay(){
   startDt.setHours(0,0,0,0);
   endDt.setHours(23,59,59,999);
 
-  const res  = await fetch('listar_movimentacoes.php', {credentials:'same-origin'});
+  // Para entradas/saídas por dia usa o select próprio do card, não o filtro global
+  const url_day = new URL('listar_movimentacoes.php', location.href);
+  const res  = await fetch(url_day.toString(), {credentials:'same-origin'});
   const movs = await res.json();
 
   const map = {};
@@ -168,7 +181,7 @@ async function renderEntradasSaidas(){
 }
 
 async function renderVencimento(){
-  const movsRes = await fetch('listar_movimentacoes.php', {credentials:'same-origin'});
+  const movsRes = await fetch(movsUrl(), {credentials:'same-origin'});
   const movs    = await movsRes.json();
   const hoje    = Date.now();
   const dias30  = 30*24*3600*1000;
@@ -192,18 +205,13 @@ async function renderVencimento(){
 }
 
 async function renderUsuarios(){
-  const res    = await fetch('listar_movimentacoes.php', {credentials:'same-origin'});
+  const res    = await fetch(movsUrl(), {credentials:'same-origin'});
   const movs   = await res.json();
   const userMap   = {};
   const userItens = {};
 
-  const filterStart = document.getElementById('filter-start').value;
-  const filterEnd   = document.getElementById('filter-end').value;
-
   movs.forEach(m => {
     if (m.tipo !== 'saida') return;
-    if (filterStart && m.data && m.data < filterStart) return;
-    if (filterEnd   && m.data && m.data.slice(0,10) > filterEnd) return;
 
     // USA recebido_por — quem RECEBEU o EPI
     const user = (m.recebido_por && m.recebido_por.trim()) ? m.recebido_por.trim() : 'Não informado';
@@ -324,7 +332,7 @@ async function updateKPIs(){
   const arr = await loadTopItems();
   document.getElementById('kpi-top-value').textContent = arr.length ? `${arr[0].nome} (${arr[0].total_mov})` : '-';
 
-  const movsRes = await fetch('listar_movimentacoes.php', {credentials:'same-origin'});
+  const movsRes = await fetch(movsUrl(), {credentials:'same-origin'});
   const movs    = await movsRes.json();
   const hoje    = Date.now();
   const dias30  = 30*24*3600*1000;
