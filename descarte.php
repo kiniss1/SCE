@@ -628,8 +628,9 @@ async function registrarLote() {
     document.getElementById('status-matricula-desc').textContent = '';
     document.getElementById('observacao-descarte').value = '';
     btn.innerHTML = '<span class="material-icons">delete_forever</span> Registrar lote <span id="lote-btn-count" class="lote-badge" style="display:none;">0</span>';
+    btn.disabled = true;
+    await carregarTudo();
     showToast('Lote de descarte registrado com sucesso!');
-    carregarTudo();
   } else {
     showToast(`${erros} item(ns) não foram registrados.`, true);
     btn.disabled = false;
@@ -699,6 +700,7 @@ async function carregarTudo() {
   renderChartMotivo();
   renderChartCusto();
   renderTabela();
+  return true;
 }
 
 // ── KPIs ──────────────────────────────────────────────────────────────
