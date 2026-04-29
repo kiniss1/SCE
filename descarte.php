@@ -455,8 +455,27 @@
         <textarea id="observacao-descarte" placeholder="Informações adicionais sobre o descarte (opcional)"></textarea>
       </div>
 
-      <button class="btn-primary" onclick="registrarDescarte()">
-        <span class="material-icons">delete_forever</span>Registrar Descarte
+      <!-- BOTÃO ADICIONAR AO LOTE -->
+      <button class="btn-add-lote" onclick="adicionarAoLote()">
+        <span class="material-icons">add_shopping_cart</span>
+        Adicionar ao lote de descarte
+      </button>
+
+      <!-- LISTA DO LOTE -->
+      <div class="lote-lista">
+        <div class="lote-lista-header">
+          Itens no lote
+          <span id="lote-contador">0 itens</span>
+        </div>
+        <div id="lote-itens">
+          <div class="lote-vazia">Nenhum item adicionado ainda</div>
+        </div>
+      </div>
+
+      <div style="height:1px;background:#fce4e4;margin:16px 0;"></div>
+      <button class="btn-primary" id="btn-registrar-lote" onclick="registrarLote()" disabled style="opacity:0.5;cursor:not-allowed;">
+        <span class="material-icons">delete_forever</span>
+        Registrar lote <span id="lote-btn-count" class="lote-badge" style="display:none;">0</span>
       </button>
 
     </div>
@@ -523,11 +542,12 @@
 
 <script>
 // ── Estado ──────────────────────────────────────────────────────────
-let itensEstoque = [];
-let descartes    = [];
-let charts       = {};
-let debounceTimer = null;
+let itensEstoque    = [];
+let descartes       = [];
+let charts          = {};
+let debounceTimer   = null;
 let motivoSelecionado = '';
+let loteDescarte    = []; // itens aguardando registro
 
 // ── Init ─────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -537,6 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('filter-end').value   = hoje.toISOString().slice(0,10);
 
   carregarItens().then(carregarTudo);
+  renderLote();
 });
 
 // ── Carregar itens do estoque ─────────────────────────────────────────
@@ -609,6 +630,129 @@ function buscarResponsavelDesc() {
 }
 
 // ── Registrar descarte ────────────────────────────────────────────────
+// ── LOTE: Adicionar ──────────────────────────────────────────────────
+function adicionarAoLote() {
+  const item_id  = document.getElementById('item-id-selecionado').value;
+  const nome     = document.getElementById('nome-item').value.trim();
+  const numero   = document.getElementById('numero-busca').value.trim();
+  const quantidade = parseInt(document.getElementById('quantidade-descarte').value);
+  const motivo   = motivoSelecionado === 'Outro'
+    ? document.getElementById('motivo-outro').value.trim()
+    : motivoSelecionado;
+  const custoUnit = parseFloat(document.getElementById('custo-preview').value || 0);
+
+  if (!item_id)                          { showToast('Selecione um item pelo Nº.', true); return; }
+  if (!quantidade || quantidade < 1)     { showToast('Informe a quantidade.', true); return; }
+  if (!motivo)                           { showToast('Selecione o motivo.', true); return; }
+
+  // Agrupa se mesmo item+motivo já está no lote
+  const existente = loteDescarte.find(i => i.item_id === item_id && i.motivo === motivo);
+  if (existente) {
+    existente.quantidade += quantidade;
+    existente.custo_total = existente.quantidade * existente.custo_unit;
+  } else {
+    loteDescarte.push({ item_id, nome, numero, quantidade, motivo, custo_unit: custoUnit, custo_total: custoUnit * quantidade });
+  }
+
+  // Limpar campos do item
+  document.getElementById('numero-busca').value = '';
+  document.getElementById('nome-item').value    = '';
+  document.getElementById('item-id-selecionado').value = '';
+  document.getElementById('custo-preview').value = '';
+  document.getElementById('item-encontrado').classList.remove('visible');
+  document.getElementById('quantidade-descarte').value = 1;
+  document.querySelectorAll('.motivo-btn').forEach(b => b.classList.remove('selected'));
+  motivoSelecionado = '';
+  document.getElementById('campo-outro').style.display = 'none';
+  document.getElementById('motivo-outro').value = '';
+
+  renderLote();
+}
+
+// ── LOTE: Remover ────────────────────────────────────────────────────
+function removerDoLote(idx) {
+  loteDescarte.splice(idx, 1);
+  renderLote();
+}
+
+// ── LOTE: Renderizar ─────────────────────────────────────────────────
+function renderLote() {
+  const container = document.getElementById('lote-itens');
+  const contador  = document.getElementById('lote-contador');
+  const btnReg    = document.getElementById('btn-registrar-lote');
+  const btnCount  = document.getElementById('lote-btn-count');
+
+  contador.textContent = loteDescarte.length + ' ' + (loteDescarte.length === 1 ? 'item' : 'itens');
+  btnCount.textContent = loteDescarte.length;
+  btnCount.style.display = loteDescarte.length ? 'inline-flex' : 'none';
+  btnReg.disabled = loteDescarte.length === 0;
+  btnReg.style.opacity  = loteDescarte.length ? '1' : '0.5';
+  btnReg.style.cursor   = loteDescarte.length ? 'pointer' : 'not-allowed';
+
+  if (!loteDescarte.length) {
+    container.innerHTML = '<div class="lote-vazia">Nenhum item adicionado ainda</div>';
+    return;
+  }
+
+  container.innerHTML = loteDescarte.map((item, idx) => `
+    <div class="lote-item">
+      <div class="lote-item-info">
+        <div class="lote-item-nome">${escHtml(item.nome)}</div>
+        <div class="lote-item-meta">
+          Nº ${escHtml(item.numero)} &nbsp;·&nbsp;
+          <span class="badge-motivo" style="font-size:0.72rem;">${escHtml(item.motivo)}</span>
+          ${item.custo_total > 0 ? ` &nbsp;·&nbsp; R$ ${item.custo_total.toLocaleString('pt-BR',{minimumFractionDigits:2})}` : ''}
+        </div>
+      </div>
+      <span class="lote-item-qtd">× ${item.quantidade}</span>
+      <button class="lote-item-remove" onclick="removerDoLote(${idx})" title="Remover">
+        <span class="material-icons" style="font-size:1.1rem;">close</span>
+      </button>
+    </div>
+  `).join('');
+}
+
+// ── LOTE: Registrar todos ─────────────────────────────────────────────
+async function registrarLote() {
+  if (!loteDescarte.length) { showToast('Adicione pelo menos um item ao lote.', true); return; }
+
+  const responsavel = document.getElementById('responsavel-desc').value.trim();
+  const matricula   = document.getElementById('matricula-desc').value.trim();
+  const observacao  = document.getElementById('observacao-descarte').value.trim();
+
+  const btn = document.getElementById('btn-registrar-lote');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-icons" style="animation:spin 1s linear infinite">refresh</span> Registrando...';
+
+  let erros = 0;
+  for (const item of loteDescarte) {
+    try {
+      const res  = await fetch('registrar_descarte.php', {
+        method: 'POST',
+        body: new URLSearchParams({ item_id: item.item_id, quantidade: item.quantidade, motivo: item.motivo, observacao, responsavel, matricula })
+      });
+      const data = await res.json();
+      if (data.status !== 'ok') erros++;
+    } catch(e) { erros++; }
+  }
+
+  if (erros === 0) {
+    loteDescarte = [];
+    renderLote();
+    document.getElementById('matricula-desc').value    = '';
+    document.getElementById('responsavel-desc').value  = '';
+    document.getElementById('status-matricula-desc').textContent = '';
+    document.getElementById('observacao-descarte').value = '';
+    btn.innerHTML = '<span class="material-icons">delete_forever</span> Registrar lote <span id="lote-btn-count" class="lote-badge" style="display:none;">0</span>';
+    showToast('Lote de descarte registrado com sucesso!');
+    carregarTudo();
+  } else {
+    showToast(`${erros} item(ns) não foram registrados.`, true);
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-icons">delete_forever</span> Registrar lote <span id="lote-btn-count" class="lote-badge">' + loteDescarte.length + '</span>';
+  }
+}
+
 async function registrarDescarte() {
   const item_id    = document.getElementById('item-id-selecionado').value;
   const quantidade = parseInt(document.getElementById('quantidade-descarte').value);
@@ -824,6 +968,10 @@ function showToast(msg, error=false) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3200);
 }
+
+const spinSt = document.createElement('style');
+spinSt.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+document.head.appendChild(spinSt);
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
