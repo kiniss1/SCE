@@ -1,3 +1,23 @@
+// ── Toast visual ─────────────────────────────────────────────────────
+function showToast(msg, error = false) {
+    let toast = document.getElementById('gem-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'gem-toast';
+        toast.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1b5e20;color:#fff;padding:13px 24px;border-radius:10px;font-weight:700;font-size:0.93rem;box-shadow:0 8px 36px rgba(0,0,0,0.18);transition:transform 0.3s ease,opacity 0.3s ease;opacity:0;z-index:99999;display:flex;align-items:center;gap:8px;';
+        document.body.appendChild(toast);
+    }
+    toast.style.background = error ? '#b71c1c' : '#1b5e20';
+    toast.innerHTML = `<span class="material-icons" style="font-size:1.1rem;">${error ? 'error' : 'check_circle'}</span> ${msg}`;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(80px)';
+    }, 3000);
+}
+
 let equipamentos = [];
 let html5QrCode  = null;
 let lote         = []; // Array de itens a registrar
@@ -70,9 +90,10 @@ function adicionarEquipamento() {
                 document.getElementById('nome-equipamento').value   = '';
                 document.getElementById('numero-item').value        = '';
                 document.getElementById('quantidade-inicial').value = 0;
-                atualizarTudo();
+                await atualizarTudo();
+                showToast('EPI adicionado com sucesso!');
             } else {
-                alert('Erro ao adicionar: ' + (data.mensagem || JSON.stringify(data)));
+                showToast('Erro ao adicionar: ' + (data.mensagem || JSON.stringify(data)), true);
             }
         });
 }
@@ -205,25 +226,23 @@ async function registrarLote() {
         document.getElementById('status-matricula-recebido').textContent = '';
         document.getElementById('observacao-movimentacao').value        = '';
         btn.innerHTML = '<span class="material-icons">send</span> Registrar lote <span id="lote-btn-count" class="lote-badge" style="display:none;">0</span>';
-        atualizarTudo();
-        atualizarDashboard();
-        alert('Lote registrado com sucesso!');
+        await atualizarTudo();
+        showToast('Lote registrado com sucesso!');
     } else {
-        alert(`Atenção: ${erros} item(ns) não foram registrados.`);
+        showToast(`Atenção: ${erros} item(ns) não foram registrados.`, true);
         btn.disabled = false;
         btn.innerHTML = '<span class="material-icons">send</span> Registrar lote <span id="lote-btn-count" class="lote-badge">'+lote.length+'</span>';
     }
 }
 
 // ── Dashboard ─────────────────────────────────────────────────────────
-function atualizarTudo() {
-    carregarEquipamentosBackend().then(() => {
-        atualizarSelectEquipamento();
-        atualizarDashboard();
-    });
+async function atualizarTudo() {
+    await carregarEquipamentosBackend();
+    atualizarSelectEquipamento();
+    await atualizarDashboard();
 }
 
-function atualizarDashboard() {
+async function atualizarDashboard() {
     const total = equipamentos.reduce((sum, eq) => sum + Number(eq.quantidade || 0), 0);
     document.getElementById('card-total-estoque').innerText = total;
 
