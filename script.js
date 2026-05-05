@@ -223,9 +223,10 @@ async function registrarLote() {
         document.getElementById('recebido-por').value                   = '';
         document.getElementById('status-matricula-recebido').textContent = '';
         document.getElementById('observacao-movimentacao').value        = '';
-        btn.innerHTML = '<span class="material-icons">send</span> Registrar lote <span id="lote-btn-count" class="lote-badge" style="display:none;">0</span>';
         await atualizarTudo();
         showToast('Lote registrado com sucesso!');
+        btn.innerHTML = '<span class="material-icons">send</span> Registrar lote <span id="lote-btn-count" class="lote-badge" style="display:none;">0</span>';
+        btn.disabled = false;
     } else {
         showToast(`Atenção: ${erros} item(ns) não foram registrados.`, true);
         btn.disabled = false;
@@ -244,42 +245,37 @@ async function atualizarDashboard() {
     const total = equipamentos.reduce((sum, eq) => sum + Number(eq.quantidade || 0), 0);
     document.getElementById('card-total-estoque').innerText = total;
 
-    fetch('listar_movimentacoes.php')
-        .then(r => r.json())
-        .then(movs => {
-            const movMap = {};
-            movs.forEach(m => {
-                const nome = m.nome || '';
-                movMap[nome] = (movMap[nome] || 0) + Number(m.quantidade || 0);
-            });
-            const mais = Object.entries(movMap).sort((a, b) => b[1] - a[1]).slice(0, 3);
-            document.getElementById('card-mais-movimentados').innerHTML = mais.length
-                ? mais.map(([nome, qtd], i) =>
-                    `<span style="display:block;font-size:1.05em;font-weight:600;">${i+1}. ${nome}<span style="color:#1976d2;font-weight:700;font-size:0.93em;"> (${qtd})</span></span>`
-                  ).join('')
-                : '-';
-        });
-
-    const hoje  = new Date();
-    const dias30 = 30 * 24 * 60 * 60 * 1000;
-    fetch('listar_movimentacoes.php')
-        .then(r => r.json())
-        .then(movs => {
-            const vencendo = movs.filter(m => {
-                if (!m.validade) return false;
-                const dataVal = new Date(m.validade);
-                const eq = equipamentos.find(e => e.nome === m.nome);
-                if (!eq || eq.quantidade <= 0) return false;
-                return (dataVal - hoje) >= 0 && (dataVal - hoje) <= dias30;
-            });
-            document.getElementById('card-vencendo').innerText = vencendo.length;
-        });
-
     const baixo = equipamentos.filter(e => Number(e.quantidade || 0) <= 2).length;
     document.getElementById('card-estoque-baixo').innerText = baixo;
     const card = document.getElementById('card-estoque-baixo-card');
     if (baixo > 0) card.classList.add('pulsante');
     else card.classList.remove('pulsante');
+
+    try {
+        const movs = await fetch('listar_movimentacoes.php').then(r => r.json());
+        const movMap = {};
+        movs.forEach(m => {
+            const nome = m.nome || '';
+            movMap[nome] = (movMap[nome] || 0) + Number(m.quantidade || 0);
+        });
+        const mais = Object.entries(movMap).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        document.getElementById('card-mais-movimentados').innerHTML = mais.length
+            ? mais.map(([nome, qtd], i) =>
+                `<span style="display:block;font-size:1.05em;font-weight:600;">${i+1}. ${nome}<span style="color:#1976d2;font-weight:700;font-size:0.93em;"> (${qtd})</span></span>`
+              ).join('')
+            : '-';
+
+        const hoje   = new Date();
+        const dias30 = 30 * 24 * 60 * 60 * 1000;
+        const vencendo = movs.filter(m => {
+            if (!m.validade) return false;
+            const dataVal = new Date(m.validade);
+            const eq = equipamentos.find(e => e.nome === m.nome);
+            if (!eq || eq.quantidade <= 0) return false;
+            return (dataVal - hoje) >= 0 && (dataVal - hoje) <= dias30;
+        });
+        document.getElementById('card-vencendo').innerText = vencendo.length;
+    } catch(e) {}
 }
 
 function mostrarModalEstoqueBaixo() {
