@@ -74,7 +74,7 @@ function atualizarSelectEquipamento() {
 }
 
 // ── Cadastrar EPI ─────────────────────────────────────────────────────
-function adicionarEquipamento() {
+async function adicionarEquipamento() {
     const nome       = document.getElementById('nome-equipamento').value.trim();
     const numero     = document.getElementById('numero-item').value.trim();
     const quantidade = parseInt(document.getElementById('quantidade-inicial').value) || 0;
@@ -83,19 +83,17 @@ function adicionarEquipamento() {
     if (equipamentos.find(e => e.nome.toLowerCase() === nome.toLowerCase() && e.numero_item === numero)) {
         alert('EPI já cadastrado com esse nome e Nº!'); return;
     }
-    fetch('adicionar_item.php', { method: 'POST', body: new URLSearchParams({nome, numero, quantidade}) })
-        .then(r => r.json())
-        .then(data => {
-            if (data.status === 'ok') {
-                document.getElementById('nome-equipamento').value   = '';
-                document.getElementById('numero-item').value        = '';
-                document.getElementById('quantidade-inicial').value = 0;
-                await atualizarTudo();
-                showToast('EPI adicionado com sucesso!');
-            } else {
-                showToast('Erro ao adicionar: ' + (data.mensagem || JSON.stringify(data)), true);
-            }
-        });
+    const res  = await fetch('adicionar_item.php', { method: 'POST', body: new URLSearchParams({nome, numero, quantidade}) });
+    const data = await res.json();
+    if (data.status === 'ok') {
+        document.getElementById('nome-equipamento').value   = '';
+        document.getElementById('numero-item').value        = '';
+        document.getElementById('quantidade-inicial').value = 0;
+        await atualizarTudo();
+        showToast('EPI adicionado com sucesso!');
+    } else {
+        showToast('Erro ao adicionar: ' + (data.mensagem || JSON.stringify(data)), true);
+    }
 }
 
 // ── LOTE: Adicionar item ──────────────────────────────────────────────
