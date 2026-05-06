@@ -1,4 +1,3 @@
-<?php require 'auth.php'; requerLogin(); ?>
 <?php
 session_start();
 // Tokens para operações críticas (CSRF-like). Gerar se não existir.
