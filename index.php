@@ -1,0 +1,388 @@
+<?php require 'auth.php'; requerLogin(); ?>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>GEM — Controle de EPI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── LOTE ──────────────────────────────────────────── */
+    .lote-lista {
+      margin: 12px 0 0;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .lote-lista-header {
+      background: var(--accent2);
+      padding: 8px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lote-lista-header span { font-weight: 400; color: var(--primary-light); }
+    .lote-vazia {
+      padding: 14px;
+      text-align: center;
+      font-size: 0.85rem;
+      color: #aab;
+    }
+    .lote-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 14px;
+      border-top: 1px solid var(--border);
+      font-size: 0.88rem;
+      gap: 8px;
+    }
+    .lote-item:nth-child(even) { background: #fafcff; }
+    .lote-item-info { flex: 1; min-width: 0; }
+    .lote-item-nome { font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lote-item-meta { font-size: 0.78rem; color: var(--text-muted); }
+    .lote-item-qtd {
+      font-weight: 800; color: var(--primary-light);
+      background: var(--accent); padding: 3px 10px;
+      border-radius: 20px; font-size: 0.85rem; white-space: nowrap;
+    }
+    .lote-item-remove {
+      background: none; border: none; cursor: pointer;
+      color: #bbb; padding: 3px; border-radius: 4px;
+      transition: color 0.15s; display: flex; align-items: center;
+      margin-top: 0;
+    }
+    .lote-item-remove:hover { color: var(--danger); }
+    .lote-item-remove .material-icons { font-size: 1.1rem; }
+    .btn-add-lote {
+      width: 100%; padding: 9px;
+      background: var(--accent);
+      border: 1.5px dashed var(--primary-light);
+      border-radius: var(--radius-sm);
+      color: var(--primary-light);
+      font-weight: 700; font-size: 0.9rem;
+      cursor: pointer; display: flex;
+      align-items: center; justify-content: center;
+      gap: 6px; transition: all 0.18s; margin-top: 0;
+    }
+    .btn-add-lote:hover { background: var(--accent2); border-style: solid; }
+    .btn-registrar-lote {
+      width: 100%; padding: 13px 20px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff; border: none; border-radius: var(--radius-sm);
+      font-size: 0.97rem; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; box-shadow: 0 4px 14px rgba(21,101,192,0.3);
+      transition: all 0.18s; margin-top: 6px; letter-spacing: 0.3px;
+    }
+    .btn-registrar-lote:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      box-shadow: 0 6px 20px rgba(21,101,192,0.4);
+      transform: translateY(-1px);
+    }
+    .btn-registrar-lote:disabled {
+      background: #c5d5e8; box-shadow: none; cursor: not-allowed; transform: none;
+    }
+    .lote-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--danger); color: #fff;
+      font-size: 0.72rem; font-weight: 800;
+      width: 18px; height: 18px; border-radius: 50%;
+      margin-left: 4px;
+    }
+    .tipo-tag {
+      display: inline-block; padding: 2px 7px; border-radius: 4px;
+      font-size: 0.72rem; font-weight: 700;
+    }
+    .tipo-saida  { background: #ffebee; color: var(--danger); }
+    .tipo-entrada { background: #e8f5e9; color: #388e3c; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-brand">
+      <span class="material-icons">security</span>
+      <div>
+        <h1>GEM — Sistema de Controle de EPI</h1>
+        <span class="sub">Gestão de Estoque e Materiais</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav class="menu">
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="/" class="menu-btn active"><span class="material-icons">home</span>Início</a>
+      <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+      <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
+      <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
+      <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
+    </div>
+    <div class="nav-actions">
+      <a href="graficos.php" class="menu-btn btn-graficos">
+        <span class="material-icons">bar_chart</span>Ver Gráficos
+      </a>
+    
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;" title="Sair"><span class="material-icons">logout</span>Sair</a>
+    </div>
+    <button class="nav-hamburger" onclick="abrirDrawer()" aria-label="Menu">
+      <span class="material-icons">menu</span>
+    </button>
+  </div>
+
+  <!-- Drawer mobile -->
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-drawer-overlay" onclick="fecharDrawer()"></div>
+    <div class="nav-drawer-panel">
+      <div class="nav-drawer-header">
+        <span>GEM — EPI</span>
+        <button class="nav-drawer-close" onclick="fecharDrawer()">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="nav-drawer-links">
+        <a href="/" class="active"><span class="material-icons">home</span>Início</a>
+        <a href="estoque.php"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+        <a href="historico.php"><span class="material-icons">history</span>Histórico</a>
+        <a href="fichas_epi.php"><span class="material-icons">description</span>Fichas de EPI</a>
+        <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
+        <a href="graficos.php" class="drawer-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="kpi-strip" id="dashboard-cards">
+  <div class="kpi-card">
+    <div class="kpi-icon"><span class="material-icons">inventory</span></div>
+    <div class="kpi-info">
+      <div class="kpi-label">EPIs em Estoque</div>
+      <div class="kpi-value" id="card-total-estoque">—</div>
+      <div class="kpi-desc">Unidades totais</div>
+    </div>
+  </div>
+  <div class="kpi-card danger pulsante" id="card-estoque-baixo-card">
+    <div class="kpi-icon"><span class="material-icons">report_problem</span></div>
+    <div class="kpi-info">
+      <div class="kpi-label">Estoque Crítico</div>
+      <div class="kpi-value" id="card-estoque-baixo">—</div>
+      <div class="kpi-desc">Clique para ver detalhes</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon"><span class="material-icons">trending_up</span></div>
+    <div class="kpi-info">
+      <div class="kpi-label">Mais Movimentados</div>
+      <div class="kpi-value" id="card-mais-movimentados" style="font-size:0.85rem;font-weight:700;line-height:1.3;">—</div>
+      <div class="kpi-desc">Maior volume de saídas</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon"><span class="material-icons">event_busy</span></div>
+    <div class="kpi-info">
+      <div class="kpi-label">Próx. Vencimento</div>
+      <div class="kpi-value" id="card-vencendo">—</div>
+      <div class="kpi-desc">Vencem em 30 dias</div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-estoque-baixo">
+  <div>
+    <span style="position:absolute;top:14px;right:18px;cursor:pointer;font-size:1.4rem;color:#999;" onclick="fecharModalEstoqueBaixo()">&times;</span>
+    <h3><span class="material-icons" style="font-size:1.2rem;vertical-align:-3px;">report_problem</span> EPIs com Estoque Crítico</h3>
+    <div id="modal-estoque-baixo-lista"></div>
+  </div>
+</div>
+
+<div class="main-layout">
+
+  <!-- CADASTRAR EPI -->
+  <div class="card">
+    <div class="card-header">
+      <span class="material-icons">add_box</span>
+      <h2>Cadastrar Novo EPI</h2>
+    </div>
+    <div class="card-body">
+      <div class="field">
+        <label>Nome do EPI</label>
+        <input type="text" id="nome-equipamento" placeholder="Ex: Capacete de Segurança">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Nº do EPI</label>
+          <input type="text" id="numero-item" placeholder="Ex: 986000">
+        </div>
+        <div class="field">
+          <label>Quantidade Inicial</label>
+          <input type="number" id="quantidade-inicial" min="0" value="0">
+        </div>
+      </div>
+      <button class="btn-primary" onclick="adicionarEquipamento()">
+        <span class="material-icons">add_circle</span>Adicionar ao Estoque
+      </button>
+    </div>
+  </div>
+
+  <!-- MOVIMENTAR ESTOQUE (com lote) -->
+  <div class="card">
+    <div class="card-header">
+      <span class="material-icons">compare_arrows</span>
+      <h2>Registrar Movimentação</h2>
+    </div>
+    <div class="card-body">
+
+      <!-- SELEÇÃO DO ITEM -->
+      <div class="field">
+        <label>EPI</label>
+        <div class="field-with-action">
+          <select id="select-equipamento"></select>
+          <button type="button" id="btn-ler-qr" class="btn-icon" title="Ler QR Code">
+            <span class="material-icons">qr_code_scanner</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Tipo</label>
+          <select id="tipo-movimento">
+            <option value="saida">↓ Saída</option>
+            <option value="entrada">↑ Entrada</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Quantidade</label>
+          <input type="number" id="quantidade-movimento" min="1" value="1">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Validade do EPI</label>
+        <input type="date" id="validade-equipamento">
+      </div>
+
+      <!-- BOTÃO ADICIONAR AO LOTE -->
+      <button class="btn-add-lote" onclick="adicionarAoLote()">
+        <span class="material-icons">add_shopping_cart</span>
+        Adicionar ao lote
+      </button>
+
+      <!-- LISTA DO LOTE -->
+      <div class="lote-lista">
+        <div class="lote-lista-header">
+          Itens no lote
+          <span id="lote-contador">0 itens</span>
+        </div>
+        <div id="lote-itens">
+          <div class="lote-vazia">Nenhum item adicionado ainda</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- DADOS DO COLABORADOR (aplica a todos os itens do lote) -->
+      <div class="field">
+        <label>Matrícula do Responsável</label>
+        <div class="field-with-action">
+          <input type="text" id="matricula-responsavel" placeholder="Digite a matrícula" maxlength="10" oninput="buscarResponsavel()">
+          <span id="status-matricula" class="field-status"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Responsável</label>
+        <input type="text" id="usuario" placeholder="Preenchido automático pela matrícula" readonly>
+      </div>
+
+      <div class="field">
+        <label>Matrícula de Quem Recebeu</label>
+        <div class="field-with-action">
+          <input type="text" id="matricula-recebido" placeholder="Digite a matrícula" maxlength="10" oninput="buscarRecebidoPor()">
+          <span id="status-matricula-recebido" class="field-status"></span>
+        </div>
+      </div>
+      <div class="field">
+        <label>Recebido por</label>
+        <input type="text" id="recebido-por" placeholder="Preenchido automático pela matrícula" readonly>
+      </div>
+
+      <div class="field">
+        <label>Observação</label>
+        <textarea id="observacao-movimentacao" placeholder="Informações adicionais (opcional)"></textarea>
+      </div>
+
+      <button class="btn-registrar-lote" id="btn-registrar-lote" onclick="registrarLote()" disabled>
+        <span class="material-icons">send</span>
+        Registrar lote <span id="lote-btn-count" class="lote-badge" style="display:none;">0</span>
+      </button>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="quick-actions">
+  <button class="quick-btn" onclick="window.location.href='estoque.php'">
+    <span class="material-icons">inventory_2</span>
+    <div class="quick-btn-text">
+      <strong>Estoque Atual</strong>
+      <span>Visualize e gerencie todos os EPIs</span>
+    </div>
+  </button>
+  <button class="quick-btn" onclick="window.location.href='historico.php'">
+    <span class="material-icons">history</span>
+    <div class="quick-btn-text">
+      <strong>Histórico de Movimentações</strong>
+      <span>Consulte todas as entradas e saídas</span>
+    </div>
+  </button>
+  <button class="quick-btn" onclick="window.location.href='descarte.php'">
+    <span class="material-icons">delete_forever</span>
+    <div class="quick-btn-text">
+      <strong>Descarte de EPI</strong>
+      <span>Registre e acompanhe os descartes</span>
+    </div>
+  </button>
+  <button class="quick-btn" onclick="window.location.href='graficos.php'">
+    <span class="material-icons">bar_chart</span>
+    <div class="quick-btn-text">
+      <strong>Painel de Gráficos</strong>
+      <span>Indicadores e análises visuais</span>
+    </div>
+  </button>
+</div>
+
+<div id="qr-modal-bg">
+  <div id="qr-modal-box" style="position:relative;">
+    <span id="qr-modal-close" onclick="fecharQRModal()">&times;</span>
+    <h3>Ler QR Code do EPI</h3>
+    <div id="qr-reader" style="width:300px;max-width:88vw;"></div>
+    <div id="qr-status" style="margin-top:10px;font-size:0.93rem;color:#1565c0;"></div>
+  </div>
+</div>
+
+<script>
+function abrirDrawer() {
+  document.getElementById('nav-drawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function fecharDrawer() {
+  document.getElementById('nav-drawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') fecharDrawer(); });
+</script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script src="script.js"></script>
+</body>
+</html>
