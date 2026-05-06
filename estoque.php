@@ -323,7 +323,10 @@ function atualizarTabelaEstoque() {
                 <button class="btn btn--small btn--outline" onclick="movimentarPersonalizado(${idx},'entrada')" title="Adicionar">Entrar</button>
                 <input type="number" id="personalizado-qtd-input-${idx}-saida" min="1" placeholder="-" style="width:60px;margin-left:6px;margin-right:4px;">
                 <button class="btn btn--small btn--outline" onclick="movimentarPersonalizado(${idx},'saida')" title="Remover">Sair</button>
-                <button class="btn btn--small" style="background:var(--danger);color:#fff;margin-left:6px;" onclick="removerEquipamento(${eq.id})" title="Remover EPI">
+                <button class="btn btn--small btn--outline" onclick="abrirModalEditar(${eq.id}, \`${eq.nome}\`, \`${eq.numero_item || ''}\`)" title="Editar nome/número" style="margin-left:6px;">
+                    <span class="material-icons" style="font-size:1rem;">edit</span>
+                </button>
+                <button class="btn btn--small" style="background:var(--danger);color:#fff;margin-left:4px;" onclick="removerEquipamento(${eq.id})" title="Remover EPI">
                     <span class="material-icons" style="font-size:1rem;">delete</span>
                 </button>
             </td>
@@ -554,6 +557,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
     verificarUltimoLoteServidor();
 });
+
+function abrirModalEditar(id, nome, numero) {
+    document.getElementById('editar-id').value    = id;
+    document.getElementById('editar-nome').value  = nome;
+    document.getElementById('editar-numero').value = numero;
+    const modal = document.getElementById('modal-editar');
+    modal.style.display = 'flex';
+    setTimeout(() => document.getElementById('editar-nome').focus(), 100);
+}
+
+function fecharModalEditar() {
+    document.getElementById('modal-editar').style.display = 'none';
+}
+
+async function salvarEdicao() {
+    const id     = document.getElementById('editar-id').value;
+    const nome   = document.getElementById('editar-nome').value.trim();
+    const numero = document.getElementById('editar-numero').value.trim();
+    if (!nome)   { alert('Informe o nome.'); return; }
+    if (!numero) { alert('Informe o número.'); return; }
+
+    const btn = document.querySelector('#modal-editar button:last-child');
+    btn.textContent = 'Salvando...';
+    btn.disabled = true;
+
+    const res  = await fetch('editar_item.php', {
+        method: 'POST',
+        body: new URLSearchParams({ id, nome, numero })
+    });
+    const data = await res.json();
+
+    if (data.status === 'ok') {
+        fecharModalEditar();
+        await atualizarTudo();
+        // Mostrar toast se disponível
+        if (typeof showToast === 'function') showToast('EPI atualizado com sucesso!');
+    } else {
+        alert('Erro ao salvar: ' + (data.mensagem || 'tente novamente'));
+    }
+    btn.textContent = 'Salvar';
+    btn.disabled = false;
+}
+
+// Fechar modal clicando no fundo
+document.getElementById('modal-editar').addEventListener('click', function(e) {
+    if (e.target === this) fecharModalEditar();
+});
 </script>
+
+<!-- Modal Editar Item -->
+<div id="modal-editar" style="display:none;position:fixed;inset:0;background:rgba(8,47,82,0.25);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(3px);padding:16px;">
+  <div style="background:#fff;border-radius:16px;box-shadow:0 8px 36px rgba(11,75,128,0.18);max-width:420px;width:100%;padding:24px 22px 20px;position:relative;animation:slideUp .22s ease;">
+    <span style="position:absolute;right:16px;top:12px;cursor:pointer;font-size:1.5rem;color:#999;line-height:1;" onclick="fecharModalEditar()">&times;</span>
+    <h3 style="color:var(--primary);font-size:1rem;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:8px;">
+      <span class="material-icons" style="font-size:1.2rem;color:var(--primary-light);background:var(--accent);padding:5px;border-radius:7px;">edit</span>
+      Editar EPI
+    </h3>
+    <input type="hidden" id="editar-id">
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted,#607080);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Nome do EPI</label>
+      <input type="text" id="editar-nome" style="width:100%;padding:10px 14px;border:1.5px solid var(--border,#d6e8f7);border-radius:10px;font-size:0.95rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#1565c0'" onblur="this.style.borderColor=''">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--text-muted,#607080);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;">Nº do EPI</label>
+      <input type="text" id="editar-numero" style="width:100%;padding:10px 14px;border:1.5px solid var(--border,#d6e8f7);border-radius:10px;font-size:0.95rem;outline:none;font-family:inherit;" onfocus="this.style.borderColor='#1565c0'" onblur="this.style.borderColor=''">
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="fecharModalEditar()" style="flex:1;padding:11px;border:1.5px solid var(--border,#d6e8f7);border-radius:10px;background:#fff;color:var(--text-muted,#607080);font-weight:600;cursor:pointer;font-size:0.93rem;">Cancelar</button>
+      <button onclick="salvarEdicao()" style="flex:1;padding:11px;background:linear-gradient(135deg,#0b4b80,#1565c0);color:#fff;border:none;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.93rem;box-shadow:0 3px 10px rgba(21,101,192,0.3);">Salvar</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
