@@ -1,16 +1,14 @@
 FROM php:8.2-fpm-alpine
 
-# Instalar Caddy e extensões PHP
 RUN apk add --no-cache caddy
 RUN docker-php-ext-install pdo pdo_mysql
 
-# Copiar arquivos do projeto
-COPY . /app
+# Configurar PHP-FPM para escutar na porta 9000
+RUN sed -i 's|listen = /var/run/php-fpm/php-fpm.sock|listen = 127.0.0.1:9000|' /usr/local/etc/php-fpm.d/www.conf
 
-# Copiar Caddyfile
+COPY . /app
 COPY Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80
 
-# Iniciar PHP-FPM e Caddy
-CMD php-fpm -D && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+CMD php-fpm -D && sleep 2 && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
