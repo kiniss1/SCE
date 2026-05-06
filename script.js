@@ -194,7 +194,7 @@ async function registrarLote() {
     let erros = 0;
     for (const item of lote) {
         try {
-            const res = await fetch('movimentar.php', {
+            const res  = await fetch('movimentar.php', {
                 method: 'POST',
                 body: new URLSearchParams({
                     item_id:              item.item_id,
@@ -208,8 +208,11 @@ async function registrarLote() {
                     matricula_recebido
                 })
             });
-            const data = await res.json();
-            if (data.status !== 'ok') erros++;
+            const text = await res.text();
+            // Aceita tanto JSON {"status":"ok"} quanto texto "ok"
+            let ok = false;
+            try { ok = JSON.parse(text).status === 'ok'; } catch(e) { ok = text.trim() === 'ok'; }
+            if (!ok) erros++;
         } catch(e) { erros++; }
     }
 
