@@ -178,6 +178,8 @@
     </div>
     <div class="nav-actions">
       <a href="graficos.php" class="menu-btn btn-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+    
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;" title="Sair"><span class="material-icons">logout</span>Sair</a>
     </div>
     <button class="nav-hamburger" onclick="abrirDrawer()" aria-label="Menu">
       <span class="material-icons">menu</span>
