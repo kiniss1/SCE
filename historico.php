@@ -1,3 +1,4 @@
+<?php require 'auth.php'; requerLogin(); ?>
 <?php
 session_start();
 // Gera tokens para operações críticas de limpeza/desfazer histórico
@@ -225,6 +226,7 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
     <a href="historico.php" class="active"><span class="material-icons">history</span>Histórico</a>
     <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
     <a href="graficos.php"><span class="material-icons">bar_chart</span>Gráficos</a>
+    <a href="logout.php" style="color:#e53935;font-weight:600;" title="Sair"><span class="material-icons">logout</span>Sair</a>
 </nav>
 
 <div class="container">
