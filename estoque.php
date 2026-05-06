@@ -1,3 +1,4 @@
+<?php require 'auth.php'; requerLogin(); ?>
 <?php
 session_start();
 // Tokens para operações críticas (CSRF-like). Gerar se não existir.
@@ -175,6 +176,8 @@ $desfazer_token = $_SESSION['desfazer_token'];
         <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
         <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
         <a href="graficos.php" class="menu-btn"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+    
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;" title="Sair"><span class="material-icons">logout</span>Sair</a>
     </div>
 </nav>
 
