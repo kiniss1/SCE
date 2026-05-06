@@ -1,4 +1,3 @@
-<?php require 'auth.php'; requerLogin(); ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
