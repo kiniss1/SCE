@@ -1,3 +1,4 @@
+<?php require 'auth.php'; requerLogin(); ?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -20,6 +21,8 @@
         <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
         <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
         <a href="graficos.php" class="menu-btn active"><span class="material-icons">bar_chart</span>Gráficos</a>
+    
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;" title="Sair"><span class="material-icons">logout</span>Sair</a>
     </div>
 </nav>
 
