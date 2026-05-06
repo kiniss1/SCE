@@ -1,4 +1,3 @@
-<?php require 'auth.php'; requerLogin(); ?>
 <?php
 session_start();
 // Gera tokens para operações críticas de limpeza/desfazer histórico
