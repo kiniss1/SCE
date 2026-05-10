@@ -249,9 +249,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if (remaining <= 300 && !warned) {
       warned = true;
       if (timer_el) { timer_el.style.background='#fff8e1'; timer_el.style.borderColor='#ffe082'; }
-      if (confirm('⚠️ Sua sessão expira em 5 minutos!
-
-Clique OK para renovar.')) {
+      if (confirm('Sua sessão expira em 5 minutos! Clique OK para renovar.')) {
         fetch(window.location.href);
         remaining = 1800; warned = false;
         if (timer_el) { timer_el.style.background=''; timer_el.style.borderColor=''; }
