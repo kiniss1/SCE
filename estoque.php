@@ -65,35 +65,22 @@ $desfazer_token = $_SESSION['desfazer_token'];
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Estoque Atual - EPI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <style>
-    /*
+  <title>Estoque Atual — GEM</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+/*
       Melhorias visuais e organizacionais:
       - Botões com classes reutilizáveis (.btn, .btn--outline, .btn--danger, .btn--warn, .btn--icon)
       - Grupo de ações com separação clara (Export / Validade / Ações)
       - Espaçamento e responsividade melhorados
       - Modais com foco e visual mais limpo
     */
-    :root {
-        --primary: #115293;
-        --primary-600: #0b4b80;
-        --accent: #e3f2fd;
-        --danger: #d32f2f;
-        --danger-dark: #b71c1c;
-        --warn: #ffb74d;
-        --success: #43a047;
-        --bg: #f6f9fc;
-        --card: #ffffff;
-        --muted: #6b7280;
-        --radius: 10px;
-        --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
-        --shadow-md: 0 6px 28px rgba(0,0,0,0.08);
-    }
-    html,body { height:100%; margin:0; font-family: 'Roboto', Arial, sans-serif; background:var(--bg); color:#111; }
+    
+    
     
     
     
@@ -201,7 +188,7 @@ $desfazer_token = $_SESSION['desfazer_token'];
         table th, table td { font-size:0.92rem; padding:8px 6px; }
         .btn { padding:7px 10px; font-size:0.95rem; }
     }
-    </style>
+  </style>
 </head>
 <body>
 <header>
@@ -223,7 +210,7 @@ $desfazer_token = $_SESSION['desfazer_token'];
       <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
       <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
       <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
-      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;"><span class="material-icons">logout</span>Sair</a>
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
     </div>
     <div class="nav-actions">
       <a href="graficos.php" class="menu-btn btn-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
