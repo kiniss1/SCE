@@ -301,8 +301,8 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
             <th>Tipo</th>
             <th>Quantidade</th>
             <th>Validade</th>
-            <th>Responsável</th>
             <th>Recebido por</th>
+            <th>Responsável</th>
             <th>Observação</th>
             <th>Gerar PDF</th>
         </tr>
@@ -411,14 +411,22 @@ function atualizarTabelaHistorico() {
     }
     historicoFiltrado.slice().reverse().forEach((reg, idx) => {
         tbody.innerHTML += `<tr>
-            <td>${escapeHtml(reg.data)}</td>
+            <td>${(()=>{
+                const d = reg.data || '';
+                if (!d) return '-';
+                const [datePart, timePart] = d.split(' ');
+                if (!datePart) return d;
+                const [y,m,dd] = datePart.split('-');
+                const hora = timePart ? timePart.slice(0,5) : '';
+                return (dd+'/'+m+'/'+y+(hora?' '+hora:'')).trim();
+            })()}</td>
             <td>${escapeHtml(reg.nome)}</td>
             <td>${escapeHtml(reg.numero_item || '')}</td>
             <td>${escapeHtml(reg.tipo === "entrada" ? "Entrada" : "Saída")}</td>
             <td>${escapeHtml(String(reg.quantidade))}</td>
             <td>${escapeHtml(reg.validade || 'N/A')}</td>
-            <td>${escapeHtml(reg.responsavel || '')}</td>
             <td>${escapeHtml(reg.recebido_por || '')}</td>
+            <td>${escapeHtml(reg.responsavel || '')}</td>
             <td>${escapeHtml(reg.observacao || '')}</td>
             <td><button class="pdf-row-button" onclick="gerarPDF(${historico.length - 1 - idx})"><span class="material-icons" style="font-size:1rem;">picture_as_pdf</span>PDF</button></td>
         </tr>`;
