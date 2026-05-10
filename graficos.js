@@ -448,17 +448,18 @@ async function loadCustoEstoque() {
       });
     }
 
-    // % Gasto vs Estoque
+    // % Custo Liberado = liberado / (liberado + estoque atual) × 100
     const elPct = document.getElementById('kpi-pct-gasto-value');
     if (elPct) {
       const custoEstoque = Number(data.custo_estoque || 0);
-      // Pega custo total do período do KPI já calculado
+      // Pega custo total liberado no período
       const custoKpi = document.getElementById('kpi-custo-value');
-      const custoTexto = custoKpi ? custoKpi.textContent.replace(/[^0-9,]/g,'').replace(',','.') : '0';
-      const custoGasto = parseFloat(custoTexto.replace(',','')) || 0;
+      const custoTexto = custoKpi ? custoKpi.textContent.replace(/[^\d,]/g,'').replace(',','.') : '0';
+      const custoGasto = parseFloat(custoTexto) || 0;
 
-      if (custoEstoque > 0) {
-        const pct = ((custoGasto / custoEstoque) * 100).toFixed(1);
+      const totalOriginal = custoGasto + custoEstoque;
+      if (totalOriginal > 0) {
+        const pct = ((custoGasto / totalOriginal) * 100).toFixed(1);
         elPct.textContent = pct + '%';
       } else {
         elPct.textContent = '—';
