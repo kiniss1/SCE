@@ -337,7 +337,7 @@ async function updateKPIs(){
   const hoje    = Date.now();
   const dias30  = 30*24*3600*1000;
   const venc    = movs.filter(m => m.validade && new Date(m.validade).getTime() >= hoje && new Date(m.validade).getTime() <= hoje+dias30).length;
-  document.getElementById('kpi-venc-value').textContent = venc;
+  // kpi-venc removido
 }
 
 // ─── Drill modal (itens) ─────────────────────────────────────────────────────
@@ -438,11 +438,31 @@ async function loadCustoEstoque() {
   try {
     const res  = await fetch('custo_estoque.php', {credentials:'same-origin'});
     const data = await res.json();
-    const el   = document.getElementById('kpi-custo-estoque-value');
-    if (el && data.status === 'ok') {
-      el.textContent = 'R\xa0' + Number(data.custo_estoque).toLocaleString('pt-BR', {
+    if (data.status !== 'ok') return;
+
+    // Valor em estoque
+    const elEstoque = document.getElementById('kpi-custo-estoque-value');
+    if (elEstoque) {
+      elEstoque.textContent = 'R ' + Number(data.custo_estoque).toLocaleString('pt-BR', {
         minimumFractionDigits: 2, maximumFractionDigits: 2
       });
+    }
+
+    // % Gasto vs Estoque
+    const elPct = document.getElementById('kpi-pct-gasto-value');
+    if (elPct) {
+      const custoEstoque = Number(data.custo_estoque || 0);
+      // Pega custo total do período do KPI já calculado
+      const custoKpi = document.getElementById('kpi-custo-value');
+      const custoTexto = custoKpi ? custoKpi.textContent.replace(/[^0-9,]/g,'').replace(',','.') : '0';
+      const custoGasto = parseFloat(custoTexto.replace(',','')) || 0;
+
+      if (custoEstoque > 0) {
+        const pct = ((custoGasto / custoEstoque) * 100).toFixed(1);
+        elPct.textContent = pct + '%';
+      } else {
+        elPct.textContent = '—';
+      }
     }
   } catch(e) { console.warn('custo_estoque:', e); }
 }
