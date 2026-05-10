@@ -5,7 +5,49 @@ if (empty($_SESSION['logado'])) {
         $_SESSION['logado'] = true;
     } else {
         echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Login</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Roboto,Arial,sans-serif;background:linear-gradient(135deg,#082f52,#1565c0);min-height:100vh;display:flex;align-items:center;justify-content:center}.box{background:#fff;border-radius:16px;padding:36px 32px;width:360px;box-shadow:0 8px 36px rgba(0,0,0,0.2)}.logo{text-align:center;margin-bottom:24px}.logo h1{font-size:1.3rem;font-weight:800;color:#0b4b80}.logo p{font-size:0.8rem;color:#607080;margin-top:4px}label{display:block;font-size:0.75rem;font-weight:700;color:#607080;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:14px}input{width:100%;padding:11px 14px;border:1.5px solid #d6e8f7;border-radius:10px;font-size:1rem;outline:none}input:focus{border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,0.1)}button{margin-top:20px;width:100%;padding:13px;background:linear-gradient(135deg,#082f52,#1565c0);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}.erro{background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:10px;font-size:0.87rem;color:#e53935;font-weight:600;margin-bottom:14px;text-align:center}</style>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Roboto,Arial,sans-serif;background:linear-gradient(135deg,#082f52,#1565c0);min-height:100vh;display:flex;align-items:center;justify-content:center}.box{background:#fff;border-radius:16px;padding:36px 32px;width:360px;box-shadow:0 8px 36px rgba(0,0,0,0.2)}.logo{text-align:center;margin-bottom:24px}.logo h1{font-size:1.3rem;font-weight:800;color:#0b4b80}.logo p{font-size:0.8rem;color:#607080;margin-top:4px}label{display:block;font-size:0.75rem;font-weight:700;color:#607080;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:14px}input{width:100%;padding:11px 14px;border:1.5px solid #d6e8f7;border-radius:10px;font-size:1rem;outline:none}input:focus{border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,0.1)}button{margin-top:20px;width:100%;padding:13px;background:linear-gradient(135deg,#082f52,#1565c0);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}.erro{background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:10px;font-size:0.87rem;color:#e53935;font-weight:600;margin-bottom:14px;text-align:center}
+  /* ── Header/Nav padrão GEM ── */
+  header {
+    background: linear-gradient(120deg, #082f52 0%, #1565c0 60%, #0288d1 100%) !important;
+    position: sticky; top: 0; z-index: 200;
+    box-shadow: 0 4px 24px rgba(8,47,82,0.28);
+    padding: 0 !important;
+    text-align: left !important;
+  }
+  .header-inner { max-width:1280px; margin:0 auto; padding:14px 28px; display:flex; align-items:center; }
+  .header-brand { display:flex; align-items:center; gap:10px; }
+  .header-brand > .material-icons { font-size:1.8rem; color:rgba(255,255,255,0.9); background:rgba(255,255,255,0.15); padding:7px; border-radius:9px; flex-shrink:0; }
+  .header-brand h1 { font-size:1.2rem; font-weight:700; color:#fff; line-height:1.2; }
+  .header-brand .sub { font-size:0.72rem; color:rgba(255,255,255,0.62); display:block; }
+  nav.menu { background:rgba(255,255,255,0.97); border-bottom:1px solid #d6e8f7; box-shadow:0 2px 10px rgba(11,75,128,0.07); position:sticky; top:0; z-index:199; }
+  .nav-inner { max-width:1280px; margin:0 auto; padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:52px; }
+  .nav-links { display:flex; gap:2px; height:100%; align-items:center; overflow-x:auto; scrollbar-width:none; }
+  .nav-links::-webkit-scrollbar { display:none; }
+  .nav-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; }
+  .menu-btn { display:inline-flex; align-items:center; gap:5px; padding:7px 12px; border-radius:8px; font-size:0.88rem; font-weight:600; color:#607080 !important; text-decoration:none; transition:all 0.2s; border:1px solid transparent; white-space:nowrap; min-height:36px; }
+  .menu-btn .material-icons { font-size:1.05rem; }
+  .menu-btn:hover { background:#e8f4ff; color:#0b4b80 !important; border-color:#d6e8f7; }
+  .menu-btn.active { background:#0b4b80; color:#fff !important; border-color:#0b4b80; box-shadow:0 3px 12px rgba(21,101,192,0.3); }
+  .menu-btn.btn-graficos { background:linear-gradient(135deg,#0b4b80,#1565c0); color:#fff !important; border:none; box-shadow:0 3px 12px rgba(21,101,192,0.3); }
+  .nav-hamburger { display:none; background:none; border:none; cursor:pointer; padding:6px; border-radius:8px; color:#0b4b80; }
+  .nav-hamburger .material-icons { font-size:1.6rem; display:block; }
+  .nav-drawer { display:none; position:fixed; inset:0; z-index:300; }
+  .nav-drawer.open { display:block; }
+  .nav-drawer-overlay { position:absolute; inset:0; background:rgba(8,47,82,0.35); }
+  .nav-drawer-panel { position:absolute; top:0; left:0; width:min(280px,80vw); height:100%; background:#fff; box-shadow:0 8px 36px rgba(11,75,128,0.18); display:flex; flex-direction:column; overflow-y:auto; }
+  .nav-drawer-header { background:linear-gradient(135deg,#082f52,#1565c0); padding:20px 18px; display:flex; align-items:center; justify-content:space-between; }
+  .nav-drawer-header span { color:#fff; font-weight:700; font-size:1rem; }
+  .nav-drawer-close { background:rgba(255,255,255,0.15); border:none; border-radius:8px; padding:5px; cursor:pointer; color:#fff; display:flex; }
+  .nav-drawer-links { padding:10px 0; flex:1; }
+  .nav-drawer-links a { display:flex; align-items:center; gap:12px; padding:13px 20px; font-size:0.95rem; font-weight:600; color:#607080; text-decoration:none; border-left:3px solid transparent; transition:all 0.18s; }
+  .nav-drawer-links a .material-icons { font-size:1.25rem; color:#1565c0; }
+  .nav-drawer-links a:hover { background:#e8f4ff; color:#0b4b80; border-left-color:#1565c0; }
+  .nav-drawer-links a.active { background:#dbeeff; color:#0b4b80; border-left-color:#0b4b80; font-weight:700; }
+  @media(max-width:900px){ .nav-links{display:none} .nav-actions{display:none} .nav-hamburger{display:flex} }
+  @keyframes slideInLeft { from{transform:translateX(-100%)} to{transform:none} }
+  .nav-drawer-panel { animation:slideInLeft 0.22s ease; }
+
+  </style>
 </head><body><div class="box"><div class="logo"><h1>GEM — Controle de EPI</h1><p>Gestão de Estoque e Materiais</p></div>';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') echo '<div class="erro">Usuário ou senha incorretos.</div>';
         echo '<form method="POST"><label>Usuário</label><input type="text" name="u" autofocus autocomplete="username"><label>Senha</label><input type="password" name="p" autocomplete="current-password"><button type="submit">Entrar</button></form></div></body></html>';
@@ -27,7 +69,7 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
     <title>Histórico de Movimentação - EPI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
     :root {
         --primary: #115293;
@@ -231,15 +273,57 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
 </head>
 <body>
 <header>
-    <h1>Histórico de Movimentação</h1>
+  <div class="header-inner">
+    <div class="header-brand">
+      <span class="material-icons">security</span>
+      <div>
+        <h1>GEM — Sistema de Controle de EPI</h1>
+        <span class="sub">Gestão de Estoque e Materiais</span>
+      </div>
+    </div>
+  </div>
 </header>
+
 <nav class="menu">
-    <a href="/"><span class="material-icons">home</span>Início</a>
-    <a href="estoque.php"><span class="material-icons">inventory_2</span>Estoque Atual</a>
-    <a href="historico.php" class="active"><span class="material-icons">history</span>Histórico</a>
-    <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
-    <a href="graficos.php"><span class="material-icons">bar_chart</span>Gráficos</a>
-    <a href="logout.php" style="color:#e53935;font-weight:600;" title="Sair"><span class="material-icons">logout</span>Sair</a>
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
+      <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+      <a href="historico.php" class="menu-btn active"><span class="material-icons">history</span>Histórico</a>
+      <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
+      <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;">
+        <span class="material-icons">logout</span>Sair
+      </a>
+    </div>
+    <div class="nav-actions">
+      <a href="graficos.php" class="menu-btn btn-graficos">
+        <span class="material-icons">bar_chart</span>Ver Gráficos
+      </a>
+    </div>
+    <button class="nav-hamburger" onclick="abrirDrawer()" aria-label="Menu">
+      <span class="material-icons">menu</span>
+    </button>
+  </div>
+
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-drawer-overlay" onclick="fecharDrawer()"></div>
+    <div class="nav-drawer-panel">
+      <div class="nav-drawer-header">
+        <span>GEM — EPI</span>
+        <button class="nav-drawer-close" onclick="fecharDrawer()"><span class="material-icons">close</span></button>
+      </div>
+      <div class="nav-drawer-links">
+        <a href="/"><span class="material-icons">home</span>Início</a>
+        <a href="estoque.php"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+        <a href="historico.php" class="active"><span class="material-icons">history</span>Histórico</a>
+        <a href="fichas_epi.php"><span class="material-icons">description</span>Fichas de EPI</a>
+        <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
+        <a href="graficos.php" class="drawer-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+        <a href="logout.php" style="color:#e53935;"><span class="material-icons">logout</span>Sair</a>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <div class="container">
