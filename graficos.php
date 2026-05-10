@@ -106,15 +106,15 @@
             <div class="kpi-value" id="kpi-top-value">—</div>
             <div class="kpi-sub">Mais saídas</div>
         </div>
-        <div class="kpi-card" id="kpi-venc">
-            <div class="kpi-title">Próx. vencimento</div>
-            <div class="kpi-value" id="kpi-venc-value">—</div>
-            <div class="kpi-sub">até 30 dias</div>
-        </div>
         <div class="kpi-card" id="kpi-custo">
             <div class="kpi-title">Custo Total (Período)</div>
             <div class="kpi-value" id="kpi-custo-value">—</div>
             <div class="kpi-sub">EPIs liberados no período</div>
+        </div>
+        <div class="kpi-card" id="kpi-pct-gasto" style="border-top-color:#e65100;">
+            <div class="kpi-title">% Gasto vs Estoque</div>
+            <div class="kpi-value" id="kpi-pct-gasto-value" style="color:#e65100;font-size:1.6rem;">—</div>
+            <div class="kpi-sub">Custo liberado / valor em estoque</div>
         </div>
         <div class="kpi-card" id="kpi-custo-estoque" style="border-top-color:#00897b;">
             <div class="kpi-title">Valor em Estoque</div>
