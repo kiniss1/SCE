@@ -160,11 +160,13 @@ function renderFichaHtml($ficha, $linhas) {
 <!doctype html>
 <html lang="pt-br">
 <head>
-<meta charset="utf-8">
-<title>Fichas de EPI's</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="stylesheet" href="style.css">
-<style>
+  <title>Fichas de EPI — GEM</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
 /* Estilos específicos para a listagem e preview de fichas */
 .page-wrap { max-width: 1200px; margin: 20px auto; padding: 10px; }
 .top-actions { display:flex; gap:12px; justify-content:space-between; align-items:center; margin-bottom:12px; }
@@ -177,7 +179,7 @@ function renderFichaHtml($ficha, $linhas) {
 .btn.ghost { background:#fff; color:#1976d2; border:1px solid #d7eafc; }
 .preview-box { border:1px solid #eee; padding:6px; border-radius:6px; background:#fafbfd; max-height:260px; overflow:auto; }
 .ficha-print { width:780px; max-width:100%; margin: 6px auto; padding:8px; background:#fff; border:1px solid #bbb; }
-.ficha-header { display:flex; align-items:center; gap:8px; border-bottom:2px solid #000; padding-bottom:6px; margin-bottom:8px; }
+.ficha-
 .ficha-logo { width:90px; text-align:center; border-right:1px solid #000; padding-right:8px; font-size:14px; font-weight:700; }
 .ficha-title { flex:1; text-align:center; }
 .titulo-central { font-weight:700; font-size:18px; }
@@ -193,7 +195,7 @@ function renderFichaHtml($ficha, $linhas) {
     .ficha-print { width:100%; }
     .preview-box { max-height:200px; }
 }
-</style>
+  </style>
 </head>
 <body>
 <?php // Page header with nav (keeps your site nav style) ?>
@@ -216,7 +218,7 @@ function renderFichaHtml($ficha, $linhas) {
       <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
       <a href="fichas_epi.php" class="menu-btn active"><span class="material-icons">description</span>Fichas de EPI</a>
       <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
-      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;"><span class="material-icons">logout</span>Sair</a>
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
     </div>
     <div class="nav-actions">
       <a href="graficos.php" class="menu-btn btn-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
