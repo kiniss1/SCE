@@ -1,6 +1,7 @@
 <?php
 session_start();
 session_destroy();
-header('Location: /index.php');
+$expired = isset($_GET['expired']) ? '?expired=1' : '';
+header('Location: /index.php' . $expired);
 exit;
 ?>
