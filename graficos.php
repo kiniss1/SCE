@@ -112,9 +112,9 @@
             <div class="kpi-sub">EPIs liberados no período</div>
         </div>
         <div class="kpi-card" id="kpi-pct-gasto" style="border-top-color:#e65100;">
-            <div class="kpi-title">% Gasto vs Estoque</div>
+            <div class="kpi-title">% Custo Liberado</div>
             <div class="kpi-value" id="kpi-pct-gasto-value" style="color:#e65100;font-size:1.6rem;">—</div>
-            <div class="kpi-sub">Custo liberado / valor em estoque</div>
+            <div class="kpi-sub">Em relação ao valor em estoque</div>
         </div>
         <div class="kpi-card" id="kpi-custo-estoque" style="border-top-color:#00897b;">
             <div class="kpi-title">Valor em Estoque</div>
