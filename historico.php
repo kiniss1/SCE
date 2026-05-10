@@ -65,39 +65,14 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Histórico de Movimentação - EPI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <style>
-    :root {
-        --primary: #115293;
-        --primary-light: #1976d2;
-        --accent: #e3f2fd;
-        --danger: #ff5252;
-        --warn: #ffb74d;
-        --background: #f8fafc;
-        --text: #212121;
-        --container-bg: #fff;
-        --border: #e0e7ef;
-        --shadow: 0 4px 24px #0002;
-        --radius: 14px;
-        --zebra: #f4fafd;
-    }
-    body {
-        font-family: 'Roboto', Arial, sans-serif;
-        margin: 0;
-        background: var(--background);
-        color: var(--text);
-        min-height: 100vh;
-    }
-    
-    
-    
-    
-    
-    .container {
+  <title>Histórico — GEM</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+.container {
         background: var(--container-bg);
         padding: 34px 34px 22px 34px;
         border-radius: var(--radius);
@@ -236,7 +211,7 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
         .filtros-historico { flex-direction:column; gap:12px; }
         .filtros-actions { margin-left:0; width:100%; justify-content:space-between; }
     }
-    </style>
+  </style>
 </head>
 <body>
 <header>
@@ -258,7 +233,7 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
       <a href="historico.php" class="menu-btn active"><span class="material-icons">history</span>Histórico</a>
       <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
       <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
-      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;"><span class="material-icons">logout</span>Sair</a>
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
     </div>
     <div class="nav-actions">
       <a href="graficos.php" class="menu-btn btn-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
