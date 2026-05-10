@@ -200,14 +200,6 @@ $desfazer_token = $_SESSION['desfazer_token'];
             </button>
         </div>
 
-        <div class="group group--center" role="toolbar" aria-label="Validade">
-            <div class="chip" title="Itens com validade aproximando (7 dias)" onclick="exportarProximosValidade(7)" style="cursor:pointer;">
-                EPIs próximos da validade (1 semana)
-            </div>
-            <div class="chip" title="Itens com validade aproximando (30 dias)" onclick="exportarProximosValidade(30)" style="cursor:pointer;">
-                EPIs próximos da validade (1 mês)
-            </div>
-        </div>
 
         <div class="group group--right" role="toolbar" aria-label="Ações">
             <button id="btn-desfazer-ultimo" class="btn btn--warn btn--small" title="Desfazer último zeramento" aria-disabled="true" disabled>
