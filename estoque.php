@@ -12,7 +12,6 @@ if (empty($_SESSION['logado'])) {
         exit;
     }
 }
-}
 ?>
 <?php
 // Tokens para operações críticas (CSRF-like). Gerar se não existir.
