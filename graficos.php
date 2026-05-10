@@ -235,6 +235,7 @@
 
 <script src="graficos.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function(){
 (function(){
   var remaining = <?= isset($tempo_restante) ? (int)$tempo_restante : 1800 ?>;
   var display = document.getElementById('timer-display');
@@ -265,6 +266,7 @@ Clique OK para renovar.')) {
   }
   if (display) update();
 })();
+});
 </script>
 </body>
 </html>
