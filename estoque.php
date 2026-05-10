@@ -1,60 +1,4 @@
-<?php
-session_start();
-if (empty($_SESSION['logado'])) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['u'] ?? '') === 'admin' && ($_POST['p'] ?? '') === 'admin') {
-        $_SESSION['logado'] = true;
-    } else {
-        echo '<!DOCTYPE html><html><head>
-  <title>Estoque Atual — GEM</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-*{box-sizing:border-box;margin:0;padding:0}.box{background:#fff;border-radius:16px;padding:36px 32px;width:360px;box-shadow:0 8px 36px rgba(0,0,0,0.2)}.logo{text-align:center;margin-bottom:24px}.logo h1{font-size:1.3rem;font-weight:800;color:#0b4b80}.logo p{font-size:0.8rem;color:#607080;margin-top:4px}label{display:block;font-size:0.75rem;font-weight:700;color:#607080;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:14px}input{width:100%;padding:11px 14px;border:1.5px solid #d6e8f7;border-radius:10px;font-size:1rem;outline:none}input:focus{border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,0.1)}button{margin-top:20px;width:100%;padding:13px;background:linear-gradient(135deg,#082f52,#1565c0);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}.erro{background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:10px;font-size:0.87rem;color:#e53935;font-weight:600;margin-bottom:14px;text-align:center}
-  /* ── Header/Nav padrão GEM ── */
-  
-  .header-inner { max-width:1280px; margin:0 auto; padding:14px 28px; display:flex; align-items:center; }
-  .header-brand { display:flex; align-items:center; gap:10px; }
-  .header-brand > .material-icons { font-size:1.8rem; color:rgba(255,255,255,0.9); background:rgba(255,255,255,0.15); padding:7px; border-radius:9px; flex-shrink:0; }
-  .header-brand h1 { font-size:1.2rem; font-weight:700; color:#fff; line-height:1.2; }
-  .header-brand .sub { font-size:0.72rem; color:rgba(255,255,255,0.62); display:block; }
-  
-  .nav-inner { max-width:1280px; margin:0 auto; padding:0 28px; display:flex; align-items:center; justify-content:space-between; height:52px; }
-  
-  .nav-links::-webkit-scrollbar { display:none; }
-  .nav-actions { display:flex; gap:8px; align-items:center; flex-shrink:0; }
-  
-  
-  
-  
-  
-  .nav-hamburger { display:none; background:none; border:none; cursor:pointer; padding:6px; border-radius:8px; color:#0b4b80; }
-  .nav-hamburger .material-icons { font-size:1.6rem; display:block; }
-  .nav-drawer { display:none; position:fixed; inset:0; z-index:300; }
-  .nav-drawer.open { display:block; }
-  .nav-drawer-overlay { position:absolute; inset:0; background:rgba(8,47,82,0.35); }
-  .nav-drawer-panel { position:absolute; top:0; left:0; width:min(280px,80vw); height:100%; background:#fff; box-shadow:0 8px 36px rgba(11,75,128,0.18); display:flex; flex-direction:column; overflow-y:auto; }
-  .nav-drawer-
-  .nav-drawer-header span { color:#fff; font-weight:700; font-size:1rem; }
-  .nav-drawer-close { background:rgba(255,255,255,0.15); border:none; border-radius:8px; padding:5px; cursor:pointer; color:#fff; display:flex; }
-  .nav-drawer-links { padding:10px 0; flex:1; }
-  .nav-drawer-links a { display:flex; align-items:center; gap:12px; padding:13px 20px; font-size:0.95rem; font-weight:600; color:#607080; text-decoration:none; border-left:3px solid transparent; transition:all 0.18s; }
-  .nav-drawer-links a .material-icons { font-size:1.25rem; color:#1565c0; }
-  .nav-drawer-links a:hover { background:#e8f4ff; color:#0b4b80; border-left-color:#1565c0; }
-  .nav-drawer-links a.active { background:#dbeeff; color:#0b4b80; border-left-color:#0b4b80; font-weight:700; }
-  @media(max-width:900px){  .nav-actions{display:none} .nav-hamburger{display:flex} }
-  @keyframes slideInLeft { from{transform:translateX(-100%)} to{transform:none} }
-  .nav-drawer-panel { animation:slideInLeft 0.22s ease; }
-  </style>
-</head><body><div class="box"><div class="logo"><h1>GEM — Controle de EPI</h1><p>Gestão de Estoque e Materiais</p></div>';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo '<div class="erro">Usuário ou senha incorretos.</div>';
-        echo '<form method="POST"><label>Usuário</label><input type="text" name="u" autofocus autocomplete="username"><label>Senha</label><input type="password" name="p" autocomplete="current-password"><button type="submit">Entrar</button></form></div></body></html>';
-        exit;
-    }
-}
-?>
+<?php require 'session.php'; ?>
 <?php
 // Tokens para operações críticas (CSRF-like). Gerar se não existir.
 if (!isset($_SESSION['zerar_token'])) $_SESSION['zerar_token'] = bin2hex(random_bytes(16));
@@ -213,6 +157,11 @@ $desfazer_token = $_SESSION['desfazer_token'];
       <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
     </div>
     <div class="nav-actions">
+      <!-- Timer de sessão -->
+<div id="session-timer" style="display:flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:700;color:#607080;background:var(--accent,#e8f4ff);padding:5px 10px;border-radius:8px;border:1px solid var(--border,#d6e8f7);">
+  <span class="material-icons" style="font-size:1rem;color:#1565c0;">timer</span>
+  <span id="timer-display">30:00</span>
+</div>
       <a href="graficos.php" class="menu-btn btn-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
     </div>
     <button class="nav-hamburger" onclick="abrirDrawer()"><span class="material-icons">menu</span></button>
@@ -688,5 +637,53 @@ document.getElementById('modal-editar').addEventListener('click', function(e) {
     </div>
   </div>
 </div>
+<script>
+(function(){
+  var remaining = <?= $tempo_restante ?? 1800 ?>;
+  var display = document.getElementById('timer-display');
+  var timer_el = document.getElementById('session-timer');
+  var warned = false;
+
+  function update() {
+    if (remaining <= 0) {
+      window.location.href = 'logout.php?expired=1';
+      return;
+    }
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+    // Aviso aos 5 minutos
+    if (remaining <= 300 && !warned) {
+      warned = true;
+      timer_el.style.background = '#fff8e1';
+      timer_el.style.borderColor = '#ffe082';
+      timer_el.style.color = '#f57c00';
+      timer_el.querySelector('.material-icons').style.color = '#f57c00';
+      if (confirm('⚠️ Sua sessão expira em 5 minutos!\n\nClique OK para renovar a sessão.')) {
+        fetch(window.location.href); // ping para renovar
+        remaining = <?= SESSION_TIMEOUT ?? 1800 ?>;
+        warned = false;
+        timer_el.style.background = '';
+        timer_el.style.borderColor = '';
+        timer_el.style.color = '';
+      }
+    }
+
+    // Vermelho nos últimos 60 segundos
+    if (remaining <= 60) {
+      timer_el.style.background = '#ffebee';
+      timer_el.style.borderColor = '#ffcdd2';
+      timer_el.querySelector('.material-icons').style.color = '#e53935';
+      display.style.color = '#e53935';
+    }
+
+    remaining--;
+    setTimeout(update, 1000);
+  }
+
+  if (display) update();
+})();
+</script>
 </body>
 </html>
