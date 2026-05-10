@@ -12,7 +12,9 @@ if (empty($_SESSION['logado'])) {
         exit;
     }
 }
+}
 ?>
+<?php
 // Tokens para operações críticas (CSRF-like). Gerar se não existir.
 if (!isset($_SESSION['zerar_token'])) $_SESSION['zerar_token'] = bin2hex(random_bytes(16));
 if (!isset($_SESSION['desfazer_token'])) $_SESSION['desfazer_token'] = bin2hex(random_bytes(16));
