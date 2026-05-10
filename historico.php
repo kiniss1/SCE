@@ -12,7 +12,9 @@ if (empty($_SESSION['logado'])) {
         exit;
     }
 }
+}
 ?>
+<?php
 // Gera tokens para operações críticas de limpeza/desfazer histórico
 if (!isset($_SESSION['limpar_historico_token'])) $_SESSION['limpar_historico_token'] = bin2hex(random_bytes(16));
 if (!isset($_SESSION['desfazer_historico_token'])) $_SESSION['desfazer_historico_token'] = bin2hex(random_bytes(16));
