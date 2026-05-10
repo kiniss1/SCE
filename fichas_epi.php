@@ -1,4 +1,17 @@
 <?php
+session_start();
+if (empty($_SESSION['logado'])) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['u'] ?? '') === 'admin' && ($_POST['p'] ?? '') === 'admin') {
+        $_SESSION['logado'] = true;
+    } else {
+        echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Login</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Roboto,Arial,sans-serif;background:linear-gradient(135deg,#082f52,#1565c0);min-height:100vh;display:flex;align-items:center;justify-content:center}.box{background:#fff;border-radius:16px;padding:36px 32px;width:360px;box-shadow:0 8px 36px rgba(0,0,0,0.2)}.logo{text-align:center;margin-bottom:24px}.logo h1{font-size:1.3rem;font-weight:800;color:#0b4b80}.logo p{font-size:0.8rem;color:#607080;margin-top:4px}label{display:block;font-size:0.75rem;font-weight:700;color:#607080;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:14px}input{width:100%;padding:11px 14px;border:1.5px solid #d6e8f7;border-radius:10px;font-size:1rem;outline:none}input:focus{border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,0.1)}button{margin-top:20px;width:100%;padding:13px;background:linear-gradient(135deg,#082f52,#1565c0);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}.erro{background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:10px;font-size:0.87rem;color:#e53935;font-weight:600;margin-bottom:14px;text-align:center}</style></head><body><div class="box"><div class="logo"><h1>GEM — Controle de EPI</h1><p>Gestão de Estoque e Materiais</p></div>';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo '<div class="erro">Usuário ou senha incorretos.</div>';
+        echo '<form method="POST"><label>Usuário</label><input type="text" name="u" autofocus autocomplete="username"><label>Senha</label><input type="password" name="p" autocomplete="current-password"><button type="submit">Entrar</button></form></div></body></html>';
+        exit;
+    }
+}
+?>
+<?php
 // fichas_epi.php
 // Lista todas as fichas de EPI e fornece preview / download / impressão.
 // Requisitos: conexao.php, gerar_pdf_ficha.php e tabelas fichas_colaborador, ficha_linhas, colaboradores existentes.
@@ -174,14 +187,51 @@ function renderFichaHtml($ficha, $linhas) {
 </head>
 <body>
 <?php // Page header with nav (keeps your site nav style) ?>
-<header style="background:#115293;color:#fff;padding:18px 0;text-align:center;">
-    <h1 style="margin:0;">Fichas de EPI's</h1>
+<header>
+  <div class="header-inner">
+    <div class="header-brand">
+      <span class="material-icons">security</span>
+      <div>
+        <h1>GEM — Sistema de Controle de EPI</h1>
+        <span class="sub">Gestão de Estoque e Materiais</span>
+      </div>
+    </div>
+  </div>
 </header>
-<nav style="background:#fff;padding:10px;border-bottom:1px solid #e6eef6;text-align:center;">
-    <a href="index.html" style="margin-right:12px;color:#1976d2;text-decoration:none">Início</a>
-    <a href="estoque.php" style="margin-right:12px;color:#1976d2;text-decoration:none">Estoque Atual</a>
-    <a href="historico.php" style="margin-right:12px;color:#1976d2;text-decoration:none">Histórico</a>
-    <a href="fichas_epi.php" style="font-weight:700;color:#0954b8;text-decoration:none">Fichas de EPI</a>
+
+<nav class="menu">
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
+      <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+      <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
+      <a href="fichas_epi.php" class="menu-btn  active"><span class="material-icons">description</span>Fichas de EPI</a>
+      <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
+    </div>
+    <div class="nav-actions">
+      <a href="graficos.php" class="menu-btn btn-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+    </div>
+    <button class="nav-hamburger" onclick="abrirDrawer()"><span class="material-icons">menu</span></button>
+  </div>
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-drawer-overlay" onclick="fecharDrawer()"></div>
+    <div class="nav-drawer-panel">
+      <div class="nav-drawer-header">
+        <span>GEM — EPI</span>
+        <button class="nav-drawer-close" onclick="fecharDrawer()"><span class="material-icons">close</span></button>
+      </div>
+      <div class="nav-drawer-links">
+        <a href="/"><span class="material-icons">home</span>Início</a>
+        <a href="estoque.php"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+        <a href="historico.php"><span class="material-icons">history</span>Histórico</a>
+        <a href="fichas_epi.php"  class="active"><span class="material-icons">description</span>Fichas de EPI</a>
+        <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
+        <a href="graficos.php" class="drawer-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+        <a href="logout.php" style="color:#e53935;"><span class="material-icons">logout</span>Sair</a>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <div class="page-wrap">
