@@ -12,18 +12,54 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-<header><h1>Gráficos de Controle de EPI</h1></header>
-
-<nav class="menu">
-    <div class="nav-links">
-        <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
-        <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
-        <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
-        <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
-        <a href="graficos.php" class="menu-btn active"><span class="material-icons">bar_chart</span>Gráficos</a>
-    
-      <a href="logout.php" class="menu-btn" style="color:#e53935!important;border-color:#ffcdd2;" title="Sair"><span class="material-icons">logout</span>Sair</a>
+<header>
+  <div class="header-inner">
+    <div class="header-brand">
+      <span class="material-icons">security</span>
+      <div>
+        <h1>GEM — Sistema de Controle de EPI</h1>
+        <span class="sub">Gestão de Estoque e Materiais</span>
+      </div>
     </div>
+  </div>
+</header>
+<nav class="menu">
+  <div class="nav-inner">
+    <div class="nav-links">
+      <a href="/" class="menu-btn"><span class="material-icons">home</span>Início</a>
+      <a href="estoque.php" class="menu-btn"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+      <a href="historico.php" class="menu-btn"><span class="material-icons">history</span>Histórico</a>
+      <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
+      <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
+      <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
+    </div>
+    <div class="nav-actions">
+      <div id="session-timer" style="display:flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:700;color:#607080;background:var(--accent,#e8f4ff);padding:5px 10px;border-radius:8px;border:1px solid var(--border,#d6e8f7);">
+        <span class="material-icons" style="font-size:1rem;color:#1565c0;">timer</span>
+        <span id="timer-display">30:00</span>
+      </div>
+      <a href="graficos.php" class="menu-btn btn-graficos active"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+    </div>
+    <button class="nav-hamburger" onclick="abrirDrawer()"><span class="material-icons">menu</span></button>
+  </div>
+  <div class="nav-drawer" id="nav-drawer">
+    <div class="nav-drawer-overlay" onclick="fecharDrawer()"></div>
+    <div class="nav-drawer-panel">
+      <div class="nav-drawer-header">
+        <span>GEM — EPI</span>
+        <button class="nav-drawer-close" onclick="fecharDrawer()"><span class="material-icons">close</span></button>
+      </div>
+      <div class="nav-drawer-links">
+        <a href="/"><span class="material-icons">home</span>Início</a>
+        <a href="estoque.php"><span class="material-icons">inventory_2</span>Estoque Atual</a>
+        <a href="historico.php"><span class="material-icons">history</span>Histórico</a>
+        <a href="fichas_epi.php"><span class="material-icons">description</span>Fichas de EPI</a>
+        <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
+        <a href="graficos.php" class="active drawer-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
+        <a href="logout.php" style="color:#e53935;"><span class="material-icons">logout</span>Sair</a>
+      </div>
+    </div>
+  </div>
 </nav>
 
 <main class="container" role="main">
