@@ -1,26 +1,4 @@
-<?php
-session_start();
-if (empty($_SESSION['logado'])) {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['u'] ?? '') === 'admin' && ($_POST['p'] ?? '') === 'admin') {
-        $_SESSION['logado'] = true;
-    } else {
-        echo '<!DOCTYPE html><html><head>
-  <title>Fichas de EPI — GEM</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-*{box-sizing:border-box;margin:0;padding:0}.box{background:#fff;border-radius:16px;padding:36px 32px;width:360px;box-shadow:0 8px 36px rgba(0,0,0,0.2)}.logo{text-align:center;margin-bottom:24px}.logo h1{font-size:1.3rem;font-weight:800;color:#0b4b80}.logo p{font-size:0.8rem;color:#607080;margin-top:4px}label{display:block;font-size:0.75rem;font-weight:700;color:#607080;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;margin-top:14px}input{width:100%;padding:11px 14px;border:1.5px solid #d6e8f7;border-radius:10px;font-size:1rem;outline:none}input:focus{border-color:#1565c0;box-shadow:0 0 0 3px rgba(21,101,192,0.1)}button{margin-top:20px;width:100%;padding:13px;background:linear-gradient(135deg,#082f52,#1565c0);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer}.erro{background:#ffebee;border:1px solid #ffcdd2;border-radius:8px;padding:10px;font-size:0.87rem;color:#e53935;font-weight:600;margin-bottom:14px;text-align:center}
-  </style>
-</head><body><div class="box"><div class="logo"><h1>GEM — Controle de EPI</h1><p>Gestão de Estoque e Materiais</p></div>';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') echo '<div class="erro">Usuário ou senha incorretos.</div>';
-        echo '<form method="POST"><label>Usuário</label><input type="text" name="u" autofocus autocomplete="username"><label>Senha</label><input type="password" name="p" autocomplete="current-password"><button type="submit">Entrar</button></form></div></body></html>';
-        exit;
-    }
-}
-?>
+<?php require 'session.php'; ?>
 <?php
 // fichas_epi.php
 // Lista todas as fichas de EPI e fornece preview / download / impressão.
@@ -221,6 +199,11 @@ function renderFichaHtml($ficha, $linhas) {
       <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
     </div>
     <div class="nav-actions">
+      <!-- Timer de sessão -->
+<div id="session-timer" style="display:flex;align-items:center;gap:5px;font-size:0.8rem;font-weight:700;color:#607080;background:var(--accent,#e8f4ff);padding:5px 10px;border-radius:8px;border:1px solid var(--border,#d6e8f7);">
+  <span class="material-icons" style="font-size:1rem;color:#1565c0;">timer</span>
+  <span id="timer-display">30:00</span>
+</div>
       <a href="graficos.php" class="menu-btn btn-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
     </div>
     <button class="nav-hamburger" onclick="abrirDrawer()"><span class="material-icons">menu</span></button>
@@ -328,7 +311,55 @@ function openPreviewModal(id) {
         w.document.write('<style>body{margin:18px;} .ficha-print{border:1px solid #000;padding:8px;} table{border-collapse:collapse;} table th, table td{border:1px solid #bbb;padding:6px;}</style>');
         w.document.write('</head><body>');
         w.document.write(content);
-        w.document.write('</body></html>');
+        w.document.write('<script>
+(function(){
+  var remaining = <?= $tempo_restante ?? 1800 ?>;
+  var display = document.getElementById('timer-display');
+  var timer_el = document.getElementById('session-timer');
+  var warned = false;
+
+  function update() {
+    if (remaining <= 0) {
+      window.location.href = 'logout.php?expired=1';
+      return;
+    }
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+    // Aviso aos 5 minutos
+    if (remaining <= 300 && !warned) {
+      warned = true;
+      timer_el.style.background = '#fff8e1';
+      timer_el.style.borderColor = '#ffe082';
+      timer_el.style.color = '#f57c00';
+      timer_el.querySelector('.material-icons').style.color = '#f57c00';
+      if (confirm('⚠️ Sua sessão expira em 5 minutos!\n\nClique OK para renovar a sessão.')) {
+        fetch(window.location.href); // ping para renovar
+        remaining = <?= SESSION_TIMEOUT ?? 1800 ?>;
+        warned = false;
+        timer_el.style.background = '';
+        timer_el.style.borderColor = '';
+        timer_el.style.color = '';
+      }
+    }
+
+    // Vermelho nos últimos 60 segundos
+    if (remaining <= 60) {
+      timer_el.style.background = '#ffebee';
+      timer_el.style.borderColor = '#ffcdd2';
+      timer_el.querySelector('.material-icons').style.color = '#e53935';
+      display.style.color = '#e53935';
+    }
+
+    remaining--;
+    setTimeout(update, 1000);
+  }
+
+  if (display) update();
+})();
+</script>
+</body></html>');
         w.document.close();
         w.focus();
         setTimeout(function(){ w.print(); /*w.close();*/ }, 500);
@@ -349,11 +380,107 @@ function printFicha(id) {
     w.document.write('<style>body{margin:18px;} .ficha-print{border:1px solid #000;padding:8px;} table{border-collapse:collapse;} table th, table td{border:1px solid #bbb;padding:6px;}</style>');
     w.document.write('</head><body>');
     w.document.write(content);
-    w.document.write('</body></html>');
+    w.document.write('<script>
+(function(){
+  var remaining = <?= $tempo_restante ?? 1800 ?>;
+  var display = document.getElementById('timer-display');
+  var timer_el = document.getElementById('session-timer');
+  var warned = false;
+
+  function update() {
+    if (remaining <= 0) {
+      window.location.href = 'logout.php?expired=1';
+      return;
+    }
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+    // Aviso aos 5 minutos
+    if (remaining <= 300 && !warned) {
+      warned = true;
+      timer_el.style.background = '#fff8e1';
+      timer_el.style.borderColor = '#ffe082';
+      timer_el.style.color = '#f57c00';
+      timer_el.querySelector('.material-icons').style.color = '#f57c00';
+      if (confirm('⚠️ Sua sessão expira em 5 minutos!\n\nClique OK para renovar a sessão.')) {
+        fetch(window.location.href); // ping para renovar
+        remaining = <?= SESSION_TIMEOUT ?? 1800 ?>;
+        warned = false;
+        timer_el.style.background = '';
+        timer_el.style.borderColor = '';
+        timer_el.style.color = '';
+      }
+    }
+
+    // Vermelho nos últimos 60 segundos
+    if (remaining <= 60) {
+      timer_el.style.background = '#ffebee';
+      timer_el.style.borderColor = '#ffcdd2';
+      timer_el.querySelector('.material-icons').style.color = '#e53935';
+      display.style.color = '#e53935';
+    }
+
+    remaining--;
+    setTimeout(update, 1000);
+  }
+
+  if (display) update();
+})();
+</script>
+</body></html>');
     w.document.close();
     w.focus();
     setTimeout(function(){ w.print(); /*w.close();*/ }, 500);
 }
+</script>
+<script>
+(function(){
+  var remaining = <?= $tempo_restante ?? 1800 ?>;
+  var display = document.getElementById('timer-display');
+  var timer_el = document.getElementById('session-timer');
+  var warned = false;
+
+  function update() {
+    if (remaining <= 0) {
+      window.location.href = 'logout.php?expired=1';
+      return;
+    }
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+
+    // Aviso aos 5 minutos
+    if (remaining <= 300 && !warned) {
+      warned = true;
+      timer_el.style.background = '#fff8e1';
+      timer_el.style.borderColor = '#ffe082';
+      timer_el.style.color = '#f57c00';
+      timer_el.querySelector('.material-icons').style.color = '#f57c00';
+      if (confirm('⚠️ Sua sessão expira em 5 minutos!\n\nClique OK para renovar a sessão.')) {
+        fetch(window.location.href); // ping para renovar
+        remaining = <?= SESSION_TIMEOUT ?? 1800 ?>;
+        warned = false;
+        timer_el.style.background = '';
+        timer_el.style.borderColor = '';
+        timer_el.style.color = '';
+      }
+    }
+
+    // Vermelho nos últimos 60 segundos
+    if (remaining <= 60) {
+      timer_el.style.background = '#ffebee';
+      timer_el.style.borderColor = '#ffcdd2';
+      timer_el.querySelector('.material-icons').style.color = '#e53935';
+      display.style.color = '#e53935';
+    }
+
+    remaining--;
+    setTimeout(update, 1000);
+  }
+
+  if (display) update();
+})();
 </script>
 </body>
 </html>
