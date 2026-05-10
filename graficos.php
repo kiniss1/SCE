@@ -234,5 +234,37 @@
 </div>
 
 <script src="graficos.js"></script>
+<script>
+(function(){
+  var remaining = <?= isset($tempo_restante) ? (int)$tempo_restante : 1800 ?>;
+  var display = document.getElementById('timer-display');
+  var timer_el = document.getElementById('session-timer');
+  var warned = false;
+  function update() {
+    if (remaining <= 0) { window.location.href = 'logout.php?expired=1'; return; }
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    if (display) display.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    if (remaining <= 300 && !warned) {
+      warned = true;
+      if (timer_el) { timer_el.style.background='#fff8e1'; timer_el.style.borderColor='#ffe082'; }
+      if (confirm('⚠️ Sua sessão expira em 5 minutos!
+
+Clique OK para renovar.')) {
+        fetch(window.location.href);
+        remaining = 1800; warned = false;
+        if (timer_el) { timer_el.style.background=''; timer_el.style.borderColor=''; }
+      }
+    }
+    if (remaining <= 60 && timer_el) {
+      timer_el.style.background='#ffebee';
+      if (display) display.style.color='#e53935';
+    }
+    remaining--;
+    setTimeout(update, 1000);
+  }
+  if (display) update();
+})();
+</script>
 </body>
 </html>
