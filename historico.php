@@ -12,7 +12,6 @@ if (empty($_SESSION['logado'])) {
         exit;
     }
 }
-}
 ?>
 <?php
 // Gera tokens para operações críticas de limpeza/desfazer histórico
