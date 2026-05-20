@@ -177,6 +177,7 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
       <a href="historico.php" class="menu-btn active"><span class="material-icons">history</span>Histórico</a>
       <a href="fichas_epi.php" class="menu-btn"><span class="material-icons">description</span>Fichas de EPI</a>
       <a href="descarte.php" class="menu-btn"><span class="material-icons">delete_forever</span>Descarte</a>
+      <a href="inventario.php" class="menu-btn"><span class="material-icons">fact_check</span>Inventário</a>
       <a href="logout.php" class="menu-btn" style="color:#e53935!important;"><span class="material-icons">logout</span>Sair</a>
     </div>
     <div class="nav-actions">
@@ -202,6 +203,7 @@ $desfazer_token = $_SESSION['desfazer_historico_token'];
         <a href="historico.php" class="active"><span class="material-icons">history</span>Histórico</a>
         <a href="fichas_epi.php"><span class="material-icons">description</span>Fichas de EPI</a>
         <a href="descarte.php"><span class="material-icons">delete_forever</span>Descarte</a>
+        <a href="inventario.php"><span class="material-icons">fact_check</span>Inventário</a>
         <a href="graficos.php" class="drawer-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
         <a href="logout.php" style="color:#e53935;"><span class="material-icons">logout</span>Sair</a>
       </div>
