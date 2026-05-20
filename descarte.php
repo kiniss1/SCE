@@ -205,6 +205,7 @@
         <a href="historico.php"><span class="material-icons">history</span>Histórico</a>
         <a href="fichas_epi.php"><span class="material-icons">description</span>Fichas de EPI</a>
         <a href="descarte.php" class="active"><span class="material-icons">delete_forever</span>Descarte</a>
+        <a href="inventario.php"><span class="material-icons">fact_check</span>Inventário</a>
         <a href="graficos.php" class="drawer-graficos"><span class="material-icons">bar_chart</span>Ver Gráficos</a>
       </div>
     </div>
