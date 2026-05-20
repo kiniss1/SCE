@@ -271,6 +271,20 @@
       </div>
     </div>
 
+    <!-- Busca por nº de material -->
+    <div style="padding:12px 24px;background:#fff;border-bottom:1px solid var(--border,#d6e8f7);" id="inv-search-bar" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;max-width:400px;">
+        <span class="material-icons" style="color:#b0bec5;">search</span>
+        <input type="text" id="inv-search" placeholder="Buscar por nº de material ou descrição..."
+          oninput="filtrarTabela(this.value)"
+          style="flex:1;padding:9px 14px;border:1.5px solid var(--border,#d6e8f7);border-radius:9px;font-size:0.93rem;outline:none;font-family:inherit;">
+        <button onclick="document.getElementById('inv-search').value='';filtrarTabela('');" 
+          style="background:none;border:none;cursor:pointer;color:#b0bec5;display:flex;align-items:center;">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Tabela -->
     <div class="inv-table-wrap" id="inv-table-wrap">
       <div class="inv-empty" id="inv-empty">
@@ -399,6 +413,8 @@ function renderTabela() {
   stats.style.display = 'flex';
   btnEx.disabled = false;
   btnLp.disabled = false;
+  document.getElementById('inv-search-bar').style.display = 'block';
+  document.getElementById('inv-search').value = '';
 
   const tbody = document.getElementById('inv-tbody');
   tbody.innerHTML = itens.map((item, idx) => {
@@ -548,6 +564,18 @@ function showToast(msg, err=false) {
   t.classList.add('show');
   clearTimeout(t._t);
   t._t = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+
+// ── Filtrar tabela por busca ──────────────────────────────
+function filtrarTabela(termo) {
+  const t = termo.toLowerCase().trim();
+  const rows = document.querySelectorAll('#inv-tbody tr');
+  rows.forEach(row => {
+    const mat  = row.cells[0] ? row.cells[0].textContent.toLowerCase() : '';
+    const desc = row.cells[1] ? row.cells[1].textContent.toLowerCase() : '';
+    row.style.display = (!t || mat.includes(t) || desc.includes(t)) ? '' : 'none';
+  });
 }
 
 // ── Nav drawer ────────────────────────────────────────────
